@@ -1,0 +1,6 @@
+@Evenda.API_HostAddress = http://localhost:5155
+
+GET {{Evenda.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
