@@ -1,4 +1,5 @@
 ﻿using Evenda.Domain.Base;
+using Evenda.Domain.Entities.UserEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection;
@@ -45,6 +46,8 @@ namespace Evenda.Persistence.Context
 
         #region DbSets
 
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
 
         #endregion
     }
