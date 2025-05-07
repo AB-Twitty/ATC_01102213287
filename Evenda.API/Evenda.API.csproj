@@ -11,15 +11,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Evenda.App\Evenda.App.csproj" />
+    <ProjectReference Include="..\Evenda.Infrastructure\Evenda.Infrastructure.csproj" />
     <ProjectReference Include="..\Evenda.Persistence\Evenda.Persistence.csproj" />
   </ItemGroup>
 

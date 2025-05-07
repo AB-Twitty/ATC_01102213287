@@ -1,4 +1,10 @@
-﻿<div class="middle-box text-center loginscreen animated fadeInDown">
+﻿@model RegisterDto
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="middle-box text-center loginscreen animated fadeInDown" style="width: 370px;">
     <div>
         <div class="mb-4">
             <a href="index.html">
@@ -8,17 +14,40 @@
         </div>
         <h3>Register to EVENDA</h3>
         <p>Plan smart. Book fast. Experience events the Evenda way!!!</p>
-        <form class="m-t" role="form">
+
+        <form class="m-t" role="form" method="post" asp-action="Register">
+            <div class="alert alert-danger" asp-validation-summary="ModelOnly"></div>
             <div class="form-group d-inline-flex" style="gap:.5rem;">
-                <input type="text" class="form-control" placeholder="First Name" required="">
-                <input type="text" class="form-control" placeholder="Last Name" required="">
+                <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                <input asp-for="LastName" class="form-control" placeholder="Last Name" />
             </div>
+
             <div class="form-group">
-                <input type="email" class="form-control" placeholder="Email" required="">
+                <input asp-for="Email" class="form-control" placeholder="Email" />
             </div>
+
             <div class="form-group">
-                <input type="password" class="form-control" placeholder="Password" required="">
+                <input type="password" asp-for="Password" class="form-control" placeholder="Password" />
+                @if (ViewData.ModelState["Password"]?.Errors.Count > 0)
+                {
+                    var errors = ViewData.ModelState["Password"].Errors[0].ErrorMessage.Split("|||");
+                    if (errors?.Length > 1)
+                    {
+                        <ul class="text-danger text-start mb-1">
+                            @foreach (var err in errors)
+                            {
+                                <li>@err</li>
+                            }
+                        </ul>
+                    }
+                }
             </div>
+
+            <div class="form-group">
+                <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                <span class="text-danger d-blcok text-start" asp-validation-for="ConfirmPassword"></span>
+            </div>
+
             <button type="submit" class="btn btn-primary d-block w-100 mb-2">Register</button>
 
             <p class="text-muted text-center"><small>Already have an account?</small></p>
@@ -26,6 +55,5 @@
                 <a class="btn btn-sm btn-white btn-block" asp-action="Login">Login</a>
             </div>
         </form>
-
     </div>
 </div>

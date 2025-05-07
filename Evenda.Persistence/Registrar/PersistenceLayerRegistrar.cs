@@ -19,6 +19,8 @@ namespace Evenda.Persistence.Registrar
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
+            services.AddScoped<IUserRepository, UserRepository>();
+
             #endregion
 
             #region UnitOfWork

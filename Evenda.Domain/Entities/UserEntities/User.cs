@@ -10,5 +10,6 @@ namespace Evenda.Domain.Entities.UserEntities
         public string PasswordHash { get; set; }
 
         public virtual ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+        public virtual ICollection<UserSession> UserSessions { get; set; } = new HashSet<UserSession>();
     }
 }

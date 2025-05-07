@@ -135,6 +135,53 @@ namespace Evenda.Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Evenda.Domain.Entities.UserEntities.UserSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("DateCreated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("date_created")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime>("ExpireAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("expire_at");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("token");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("user_sessions", (string)null);
+                });
+
             modelBuilder.Entity("users_roles", b =>
                 {
                     b.Property<Guid>("user_id")
@@ -150,6 +197,17 @@ namespace Evenda.Persistence.Migrations
                     b.ToTable("users_roles");
                 });
 
+            modelBuilder.Entity("Evenda.Domain.Entities.UserEntities.UserSession", b =>
+                {
+                    b.HasOne("Evenda.Domain.Entities.UserEntities.User", "User")
+                        .WithMany("UserSessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("users_roles", b =>
                 {
                     b.HasOne("Evenda.Domain.Entities.UserEntities.Role", null)
@@ -163,6 +221,11 @@ namespace Evenda.Persistence.Migrations
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Evenda.Domain.Entities.UserEntities.User", b =>
+                {
+                    b.Navigation("UserSessions");
                 });
 #pragma warning restore 612, 618
         }

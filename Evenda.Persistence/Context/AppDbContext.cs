@@ -48,6 +48,7 @@ namespace Evenda.Persistence.Context
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<UserSession> UserSessions { get; set; }
 
         #endregion
     }
