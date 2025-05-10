@@ -17,7 +17,18 @@
 
         <ul class="nav navbar-top-links navbar-right">
             <li style="padding: 20px">
-                <span class="me-2 text-muted welcome-message">Welcome to Evenda, Admin</span>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <span class="me-2 text-muted welcome-message">
+                        Welcome to Evenda, @User.Identity.Name
+                    </span>
+                }
+                else
+                {
+                    <span class="me-2 text-muted welcome-message">
+                        Welcome to Evenda
+                    </span>
+                }
             </li>
             
             <li>
@@ -45,12 +56,24 @@
                 </a>
             </li>
 
-            <li>
-                <a href="login.html" class="navbar-top-item">
-                    <i class="fa fa-sign-out"></i>
-                    <span class="align-middle d-none d-md-inline-flex">Log out</span>
-                </a>
-            </li>
+            @if (User.Identity?.IsAuthenticated ?? false) 
+            {
+                <li>
+                    <a asp-controller="Auth" asp-action="Logout" class="navbar-top-item">
+                        <i class="fa fa-sign-out"></i>
+                        <span class="align-middle d-none d-md-inline-flex">Log out</span>
+                    </a>
+                </li>
+            }
+            else 
+            {
+                <li>
+                    <a asp-controller="Auth" asp-action="Login" class="navbar-top-item">
+                        <i class="fa fa-sign-in"></i>
+                        <span class="align-middle d-none d-md-inline-flex">Log in</span>
+                    </a>
+                </li>
+            }
             
         </ul>
     </nav>

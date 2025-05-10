@@ -47,6 +47,8 @@ namespace Evenda.UI.Controllers
             try
             {
                 var authDto = await _authApiClient.SendLoginReq(loginDto);
+                HttpContext.Session.SetUserSession(authDto);
+
                 _apiTokenService.SetTokens(authDto.AccessToken, authDto.RefreshToken);
             }
             catch (ValidationException vex)
@@ -87,6 +89,15 @@ namespace Evenda.UI.Controllers
             }
 
             return RedirectToAction("Login", new LoginDto { Email = registerDto.Email });
+        }
+        #endregion
+
+        #region Logout
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
         #endregion
 
