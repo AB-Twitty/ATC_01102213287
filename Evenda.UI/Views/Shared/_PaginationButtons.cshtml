@@ -1,0 +1,67 @@
+﻿@model PaginationVM
+
+<div class="text-center mt-auto">
+    <div class="btn-group">
+        <a 
+           controller="@Model.Controller"
+           action="@Model.Action"
+           page="1"
+           route-params="@Model.RouteParams"
+           class="btn btn-white">
+            <i class="fa fa-chevron-left"></i>
+        </a>
+
+        @{
+            int totalPages = Model.TotalPages;
+            int currentPage = Model.CurrentPage;
+            int beforeCount = currentPage - 1;
+            int afterCount = totalPages - currentPage;
+
+            int start = currentPage - 3;
+            int end = currentPage + 3;
+
+            if (beforeCount < 3)
+            {
+                start = 1;
+                end = Math.Min(totalPages, end + (3 - beforeCount));
+            }
+
+            if (afterCount < 3)
+            {
+                end = totalPages;
+                start = Math.Max(1, start - (3 - afterCount));
+            }
+        }
+
+        @for (int i = start; i < currentPage; i++)
+        {
+            <a 
+               controller="@Model.Controller"
+               action="@Model.Action"
+               page="@i" 
+               route-params="@Model.RouteParams"
+               class="btn btn-white">@i</a>
+        }
+
+        <a class="btn btn-primary active">@currentPage</a>
+
+        @for (int i = currentPage + 1; i <= end; i++)
+        {
+            <a 
+               controller="@Model.Controller"
+               action="@Model.Action"
+               page="@i"
+               route-params="@Model.RouteParams"
+               class="btn btn-white">@i</a>
+        }
+
+        <a 
+           controller="@Model.Controller"
+           action="@Model.Action"
+           page="@Model.TotalPages"
+           route-params="@Model.RouteParams"
+           class="btn btn-white">
+            <i class="fa fa-chevron-right"></i>
+        </a>
+    </div>
+</div>

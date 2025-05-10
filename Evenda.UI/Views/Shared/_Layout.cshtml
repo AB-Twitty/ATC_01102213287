@@ -8,13 +8,27 @@
     <link rel="shortcut icon" href="~/favicon.ico" />
     <title>@ViewData["Title"] - Evenda</title>
 
+	<link href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
 	<link href="~/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
+	<link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
 	<link href="~/css/style.min.css" rel="stylesheet" />
 	<link href="~/css/site.css" rel="stylesheet" />
+
+
+	<script src="~/js/head.js"></script>
 </head>
 <body class="gray-bg">
     
-    @RenderBody()
+    <div class="gray-bg dashbard-1" id="page-wrapper" style="width:100%;">
+
+        <partial name="_Navigation" />
+
+        @RenderBody()
+
+        <partial name="_Footer" />
+
+    </div>
 
     <script>
         window.paceOptions = { ajax: { ignoreURLs: ['mainHub', '__browserLink', 'browserLinkSignalR'], trackWebSockets: false } }
@@ -22,9 +36,13 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
+	<script src="~/lib/metismenu/metismenu.min.js"></script>
 	<script src="~/lib/pace/pace.min.js"></script>
+	<script src="~/lib/lucide/lucide.min.js"></script>
+
+	<script src="~/js/inspinia.js"></script>
+
+	<script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
