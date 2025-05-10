@@ -1,7 +1,9 @@
 ﻿using Evenda.UI.Contracts.IApiClients.IEvent;
+using Evenda.UI.Contracts.IApiClients.ITag;
 using Evenda.UI.Dtos.Event;
 using Evenda.UI.Models.EventVM;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Evenda.UI.Controllers
 {
@@ -10,14 +12,16 @@ namespace Evenda.UI.Controllers
         #region Fields
 
         private readonly IEventApiCLient _eventApiClient;
+        private readonly ITagApiClient _tagApiClient;
 
         #endregion
 
         #region Ctor
 
-        public EventsController(IEventApiCLient eventApiClient)
+        public EventsController(IEventApiCLient eventApiClient, ITagApiClient tagApiClient)
         {
             _eventApiClient = eventApiClient;
+            _tagApiClient = tagApiClient;
         }
 
         #endregion
@@ -27,8 +31,18 @@ namespace Evenda.UI.Controllers
         [HttpGet("events")]
         public async Task<IActionResult> Index([FromQuery] int pg = 1, [FromQuery] EventFilterDto? filterDto = null)
         {
-            var dataList = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedEventsReq(pg, 4));
-            return View(new EventCardsListVM { Events = dataList, Filter = filterDto });
+            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedEventsReq(pg, 8));
+
+            var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
+
+            var model = new EventCardsListVM
+            {
+                Events = events,
+                TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt).Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() }),
+                Filter = filterDto ?? new EventFilterDto()
+            };
+
+            return View(model);
         }
 
         [HttpGet("event/{name}/{id}")]
@@ -36,12 +50,6 @@ namespace Evenda.UI.Controllers
         {
             var data = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
             return View(data);
-        }
-
-        [HttpPost("event/filter")]
-        public async Task<IActionResult> Filter(EventFilterDto filterDto)
-        {
-            return RedirectToAction("Index", filterDto);
         }
 
         #endregion

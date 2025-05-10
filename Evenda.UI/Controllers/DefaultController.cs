@@ -6,7 +6,7 @@ namespace Evenda.UI.Controllers
 {
     public class DefaultController : Controller
     {
-        protected async Task<T?> ExecuteApiCall<T>(Func<Task<T>> apiCall)
+        protected async Task<T> ExecuteApiCall<T>(Func<Task<T>> apiCall)
         {
             try
             {

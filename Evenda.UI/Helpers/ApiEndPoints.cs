@@ -22,5 +22,7 @@
 
         public const string GET_PAGINATED_EVENTS = "Events/paginated?page={0}&pageSize={1}";
         public const string GET_EVENT_DETAILS = "Events/{0}";
+
+        public const string GET_TAGS = "Tags?in-use={0}";
     }
 }

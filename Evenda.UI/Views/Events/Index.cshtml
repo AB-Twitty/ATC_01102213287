@@ -47,12 +47,8 @@
                                         </div>
                                     </div>
                                     <div class="ibox-content ibox-open-border">
-                                        <select asp-for="Filter.Tag" name="tag" class="form-select">
+                                        <select asp-for="Filter.Tag" name="tag" class="form-select" asp-items="@Model.TagsSelectItems" >
                                             <option selected value="">Select Tag...</option>
-                                            <option>option 1</option>
-                                            <option>option 2</option>
-                                            <option>option 3</option>
-                                            <option>option 4</option>
                                         </select>
                                     </div>
                                 </div>
