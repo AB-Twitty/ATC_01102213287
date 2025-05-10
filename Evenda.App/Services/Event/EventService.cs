@@ -38,7 +38,7 @@ namespace Evenda.App.Services.Event
                 pageNumber: page,
                 pageSize: pageSize,
                 mapFunc: e => new EventDto(e),
-                include: x => x.Include(x => x.Images),
+                include: x => x.Include(x => x.Images).Include(x => x.Tags),
                 orderBy: x => x.DateTime,
                 orderByDescending: false
             );

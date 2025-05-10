@@ -1,5 +1,6 @@
 ﻿using Evenda.Domain.Base;
 using Evenda.Domain.Entities.MediaEntities;
+using Evenda.Domain.Entities.TagEntities;
 
 namespace Evenda.Domain.Entities.EventEntities
 {
@@ -15,5 +16,6 @@ namespace Evenda.Domain.Entities.EventEntities
         public DateTime DateTime { get; set; }
 
         public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
+        public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
     }
 }

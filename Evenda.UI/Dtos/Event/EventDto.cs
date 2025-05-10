@@ -14,6 +14,8 @@
 
         public string? ImagePath { get; set; }
         public IList<ImageDto> Images { get; set; }
+
+        public IList<string> Tags { get; set; } = new List<string>();
     }
 
     public class ImageDto

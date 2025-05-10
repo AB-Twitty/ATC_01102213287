@@ -128,6 +128,15 @@
                                                 </div>
 
                                                 <div class="ibox-content d-flex flex-column flex-grow-1 ibox-heading">
+                                                    @if (eventDto.Tags?.Any() ?? false) {
+                                                        <div class="d-flex flex-wrap gap-1">
+                                                            @foreach(var tag in eventDto.Tags) {
+                                                                <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
+                                                            }
+                                                        </div>
+                                                        <hr />
+                                                    }
+                                                    
                                                     <h3 class="align-items-center" style="font-weight:600;">
                                                         @eventDto.Name
                                                     </h3>

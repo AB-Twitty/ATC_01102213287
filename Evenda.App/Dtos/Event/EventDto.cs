@@ -16,6 +16,8 @@ namespace Evenda.App.Dtos.Event
 
         public string? ImagePath { get; set; }
 
+        public IList<string> Tags { get; set; }
+
 
         public EventDto() { }
 
@@ -32,6 +34,8 @@ namespace Evenda.App.Dtos.Event
             DateTime = @event.DateTime;
 
             ImagePath = @event?.Images?.Where(x => x.IsThumbnail).FirstOrDefault()?.Path;
+
+            Tags = @event?.Tags?.Select(x => x.Name).ToList() ?? new List<string>();
         }
     }
 }
