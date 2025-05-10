@@ -1,4 +1,6 @@
 ﻿using Evenda.Domain.Base;
+using Evenda.Domain.Entities.EventEntities;
+using Evenda.Domain.Entities.MediaEntities;
 using Evenda.Domain.Entities.UserEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -49,6 +51,10 @@ namespace Evenda.Persistence.Context
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<UserSession> UserSessions { get; set; }
+
+        public virtual DbSet<Event> Events { get; set; }
+
+        public virtual DbSet<Image> Images { get; set; }
 
         #endregion
     }

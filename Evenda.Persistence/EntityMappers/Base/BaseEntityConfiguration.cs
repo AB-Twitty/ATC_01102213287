@@ -10,7 +10,8 @@ namespace Evenda.Persistence.EntityMappers.Base
         {
             builder.Property(e => e.Id)
                 .HasColumnName("id")
-                .ValueGeneratedOnAdd();
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("NEWID()");
 
             builder.Property(e => e.DateCreated)
                 .HasColumnName("date_created")

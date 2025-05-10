@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿using Evenda.App.Utils;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace Evenda.App.Contracts.IPersistence.IRepositories
@@ -19,7 +20,11 @@ namespace Evenda.App.Contracts.IPersistence.IRepositories
             Expression<Func<TEntity, object>>? orderBy = null,
             Expression<Func<TEntity, object>>? thenOrderBy = null,
             bool orderByDescending = false);
-        Task<(int, List<TEntity>)> FindPaginatedAsync(Expression<Func<TEntity, bool>> predicate,
+        Task<PagedList<TMapEntity>> FindPaginatedAsync<TMapEntity>(Expression<Func<TEntity, bool>> predicate,
+            int pageNumber, int pageSize, Func<TEntity, TMapEntity> mapFunc,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+            Expression<Func<TEntity, object>>? orderBy = null, bool orderByDescending = false);
+        Task<PagedList<TEntity>> FindPaginatedAsync(Expression<Func<TEntity, bool>> predicate,
             int pageNumber, int pageSize,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
             Expression<Func<TEntity, object>>? orderBy = null, bool orderByDescending = false);

@@ -1,4 +1,5 @@
 ﻿using Evenda.App.Contracts.IPersistence.IRepositories;
+using Evenda.App.Utils;
 using Evenda.Domain.Base;
 using Evenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -119,11 +120,32 @@ namespace Evenda.Persistence.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<(int, List<TEntity>)> FindPaginatedAsync(Expression<Func<TEntity, bool>> predicate,
+        public async Task<PagedList<TMapEntity>> FindPaginatedAsync<TMapEntity>(Expression<Func<TEntity, bool>> predicate,
+            int pageNumber, int pageSize, Func<TEntity, TMapEntity> mapFunc,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+            Expression<Func<TEntity, object>>? orderBy = null, bool orderByDescending = false)
+        {
+            var entityList = await FindPaginatedAsync(predicate, pageNumber, pageSize, include, orderBy, orderByDescending);
+
+            var pagedList = new PagedList<TMapEntity>(
+                source: entityList.Items.Select(mapFunc).ToList(),
+                pageIndex: entityList.PageIndex,
+                pageSize: entityList.PageSize,
+                totalCount: entityList.TotalCount
+            );
+
+            return pagedList;
+        }
+
+        public async Task<PagedList<TEntity>> FindPaginatedAsync(Expression<Func<TEntity, bool>> predicate,
             int pageNumber, int pageSize,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
             Expression<Func<TEntity, object>>? orderBy = null, bool orderByDescending = false)
         {
+            pageNumber = pageNumber < 1 ? 1 : pageNumber;
+            pageSize = pageSize < 1 ? 12 : pageSize;
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
             int totalCount = 0;
             List<TEntity> items = [];
 
@@ -153,7 +175,7 @@ namespace Evenda.Persistence.Repositories
 
             query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
-            return (totalCount, items);
+            return new PagedList<TEntity>(items, pageNumber, pageSize, totalCount);
         }
 
         public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate,

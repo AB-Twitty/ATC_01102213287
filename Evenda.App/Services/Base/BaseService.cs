@@ -117,5 +117,14 @@ namespace Evenda.Services.Services.Base
                 Data = data
             };
         }
+
+        protected virtual DataResponse<TData> NotFound<TData>(string message = "Resource not found")
+        {
+            return new DataResponse<TData>
+            {
+                StatusCode = HttpStatusCode.NotFound,
+                Message = message
+            };
+        }
     }
 }

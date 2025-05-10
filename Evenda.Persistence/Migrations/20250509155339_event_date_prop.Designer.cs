@@ -4,6 +4,7 @@ using Evenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Evenda.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509155339_event_date_prop")]
+    partial class event_date_prop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,8 +30,7 @@ namespace Evenda.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -102,8 +104,7 @@ namespace Evenda.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
@@ -162,8 +163,7 @@ namespace Evenda.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
@@ -223,8 +223,7 @@ namespace Evenda.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
@@ -277,8 +276,7 @@ namespace Evenda.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
