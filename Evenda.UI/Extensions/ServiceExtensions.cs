@@ -1,6 +1,8 @@
 ﻿using Evenda.UI.ApiClients;
 using Evenda.UI.ApiClients.Auth;
+using Evenda.UI.ApiClients.Event;
 using Evenda.UI.Contracts.IApiClients.IAuth;
+using Evenda.UI.Contracts.IApiClients.IEvent;
 using Evenda.UI.Contracts.IServices;
 using Evenda.UI.Handlers;
 using Evenda.UI.Helpers;
@@ -26,6 +28,7 @@ namespace Evenda.UI.Extensions
             }).AddHttpMessageHandler<AuthTokenHandler>();
 
             services.AddScoped<IAuthApiClient, AuthApiClient>();
+            services.AddScoped<IEventApiCLient, EventApiClient>();
 
             return services;
         }

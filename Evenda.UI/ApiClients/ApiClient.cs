@@ -44,17 +44,18 @@ namespace Evenda.UI.ApiClients
 
         #region Generic Methods
 
-        protected async Task<TData> GetAsync<TData>(string url)
+        protected async Task<DataResponse<TData>> GetAsync<TData>(string url)
         {
             var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var baseResponse = JsonSerializer.Deserialize<DataResponse<TData>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             }) ?? throw new JsonException("Failed to deserialize response");
 
-            return baseResponse.Data;
+            HandleResponse(baseResponse);
+
+            return baseResponse;
         }
 
         protected async Task<DataResponse<TData>> PostAsync<TData, TDto>(string url, TDto data)

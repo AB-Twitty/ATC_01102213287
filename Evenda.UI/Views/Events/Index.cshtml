@@ -1,0 +1,204 @@
+﻿@model EventCardsListVM
+
+@{
+    ViewBag.NavActive = "Events";
+
+    ViewData["Title"] = "Events";
+}
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-xl-2 col-lg-12">
+                    <div class="ibox d-flex flex-column" style="height:100%;">
+                        <div class="ibox-title ibox-heading" style="padding-right: 8px;">
+                            <h5>Filter</h5>
+                        </div>
+                        <div class="ibox-content flex-grow-1 p-0">
+                            <form asp-controller="Events" asp-action="Index" method="Get">
+                                <div class="ibox m-0">
+                                    <div class="ibox-title p-2 pr-lg-5">
+                                        <h5>Category</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link" href="">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content ibox-open-border">
+                                        <select asp-for="Filter.Category" name="category" class="form-select">
+                                            <option selected value="">Select Category...</option>
+                                            <option>option 1</option>
+                                            <option>option 2</option>
+                                            <option>option 3</option>
+                                            <option>option 4</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="ibox m-0">
+                                    <div class="ibox-title p-2 pr-lg-5">
+                                        <h5>Tags</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link" href="">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content ibox-open-border">
+                                        <select asp-for="Filter.Tag" name="tag" class="form-select">
+                                            <option selected value="">Select Tag...</option>
+                                            <option>option 1</option>
+                                            <option>option 2</option>
+                                            <option>option 3</option>
+                                            <option>option 4</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="ibox m-0">
+                                    <div class="ibox-title p-2 pr-lg-5">
+                                        <h5>Date</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link" href="">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content ibox-open-border">
+                                        <div class="input-daterange" id="rangeDatepicker">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-text">From</div>
+                                                <input asp-for="Filter.FromDate" type="text" placeholder="XX/XX/XXXX" class="form-control" name="from">
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-text" style="padding-right: 1.3rem;padding-left: 1.3rem;">
+                                                    To
+                                                </div>
+                                                <input asp-for="Filter.ToDate" type="text" placeholder="XX/XX/XXXX" class="form-control" name="to">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-offset-2 m-2">
+                                        <button class="btn btn-danger" type="reset">Clear</button>
+                                        <button class="btn btn-primary" type="submit">Apply</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-10 col-lg-12">
+
+                    <div class="ibox d-flex flex-column" style="height:100%;">
+                        <div class="ibox-title ibox-heading">
+                            <h5>Events</h5>
+                        </div>
+                        <div class="ibox-content d-flex flex-column flex-grow-1">
+                            @if (Model.Events.Items.Count == 0) {
+                                <h1>
+                                    <i class="fa-solid fa-calendar-xmark"></i>
+                                    No Events Found
+                                </h1>
+                            }
+                            else 
+                            {
+                                <div class="row">
+                                    @foreach(var eventDto in Model.Events.Items) 
+                                    {
+                                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3" style="padding-bottom: 1.5rem;">
+                                            <div class="ibox d-flex flex-column event-card"style="height:100%;">
+                                                <div class="ibox-title" style="padding: 0; position: relative;">
+
+                                                    <div class="event-day-circle">
+                                                        <small>@eventDto.DateTime.ToString("dd MMM")</small>
+                                                    </div>
+                                                    @{
+                                                        var imagePath = eventDto?.ImagePath;
+														if (string.IsNullOrEmpty(imagePath))
+														{
+                                                            imagePath = "/img/default-event.jpg"; // Default image path
+														}
+                                                    }
+                                                    <img class="img-fluid mx-auto" style="min-width:100%;" src="@imagePath" alt="Event Image">
+                                                </div>
+
+                                                <div class="ibox-content d-flex flex-column flex-grow-1 ibox-heading">
+                                                    <h3 class="align-items-center" style="font-weight:600;">
+                                                        @eventDto.Name
+                                                    </h3>
+
+                                                    <p class="event-price">@eventDto.Price.ToString("c")</p>
+
+                                                    <div class="row">
+                                                        <div class="col-7">
+                                                            <span><i class="fa fa-calendar-check mr-2"></i>@eventDto.DateTime.ToString("ddd, dd MMM, yyyy")</span>
+                                                        </div>
+                                                        <div class="col-5 text-right">
+                                                            <span><i class="fa fa-clock mr-2"></i>@eventDto.DateTime.ToString("hh:mm tt")</span>
+                                                        </div>
+                                                    </div>
+
+                                                    @{
+                                                        var formattedName = string.Join("-", eventDto.Name.Split(" "));
+                                                        <div class="d-flex mt-auto">
+                                                            <a style="width:100%;"
+                                                               class="btn btn-primary btn-custom"
+                                                               asp-controller="Events"
+                                                               asp-action="Details"
+                                                               asp-route-id="@eventDto.Id.ToString()"
+                                                               asp-route-name="@formattedName">Book Now<i class="fa-solid fa-plus m-1"></i></a>
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @{
+                                var paginationModel = new PaginationVM
+                                {
+                                    Controller = "Events",
+                                    Action = "Index",
+                                    CurrentPage = Model.Events.PageIndex,
+                                    TotalPages = Model.Events.TotalPages,
+                                    RouteParams = new Dictionary<string, string?>
+                                    {
+                                    { "category", Model.Filter?.Category },
+                                    { "tag", Model.Filter?.Tag },
+                                    { "from", Model.Filter?.FromDate?.ToString("yyyy-MM-dd") },
+                                    { "to", Model.Filter?.ToDate?.ToString("yyyy-MM-dd") }
+                                    }
+                                };
+                            }
+                            <partial name="_PaginationButtons" model="paginationModel" />
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $("#rangeDatepicker").datepicker({
+                keyboardNavigation: !1,
+                forceParse: !1,
+                autoclose: !0
+            });
+        });
+    </script>
+}
