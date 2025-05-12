@@ -33,6 +33,11 @@ namespace Evenda.UI.ApiClients.Event
             return response.Data;
         }
 
+        public async Task<Guid> SendCreateEventReq(CreateEventDto createEventDto)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

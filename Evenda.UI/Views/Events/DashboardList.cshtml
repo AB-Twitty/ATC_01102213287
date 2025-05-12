@@ -1,0 +1,441 @@
+﻿
+
+@{
+	Layout = "_DashboardLayout";
+	ViewData["Title"] = "Events - Dashboard";
+}
+
+@section Styles {
+	<link href="~/lib/virtual-select/css/virtual-select.min.css" rel="stylesheet" />
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox-content mb-2 border-bottom">
+        <form method="Post" asp-controller="Events" asp-action="DashboardList">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-form-label" for="status">Status</label>
+                        <select name="status" id="status" multiple class="multiple-select">
+                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
+                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
+                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
+                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group">
+                        <label class="col-form-label" for="status">Tags</label>
+                        <select name="tags" id="status" multiple class="multiple-select">
+                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
+                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
+                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
+                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-form-label" for="status">Category</label>
+                        <select name="category" id="status" class="multiple-select">
+                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
+                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
+                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
+                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group">
+                        <label class="col-form-label" for="status">Date</label>
+                        <div class="input-daterange input-group" id="rangeDatepicker">
+                            <input type="text" class="form-control" name="start" value="05/14/2025">
+                            <span class="input-group-text">to</span>
+                            <input type="text" class="form-control" name="end" value="05/22/2025">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-offset-2 m-2">
+                    <button class="btn btn-danger" type="reset">Clear</button>
+                    <button class="btn btn-primary" type="submit">Apply</button>
+                </div>
+            </div>
+        </form>
+        
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Events</h5>
+                    <div class="ibox-tools">
+                        <a asp-controller="Events" asp-action="Create"  class="btn btn-primary btn-xs">Add Event <i class="fa fa-plus"></i></a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="mb-3">
+
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Search event by name...">
+                            <button class="btn btn-white" type="button">Search</button>
+                        </div>
+
+                        <div class="mt-3">
+
+                            <div class="float-end">
+                                <select class="form-select">
+                                    <option selected>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>75</option>
+                                    <option>100</option>
+                                </select>
+                            </div>
+
+                            <strong>Found 61 record filtered from 210 records.</strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover issue-tracker">
+                            <thead class="ff-secondary">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Event</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Tickets</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="label label-primary">Added</span>
+                                    </td>
+                                    <td class="issue-info">
+                                        <a href="#">
+                                            ISSUE-23
+                                        </a>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
+                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Adrian Novak
+                                    </td>
+                                    <td>
+                                        12.02.2025 10:00 am
+                                    </td>
+                                    <td>
+                                        20
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-white btn-xs">View</button>
+                                        <button class="btn btn-white btn-xs">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+                    @{
+                        var paginationModel = new PaginationVM
+                        {
+                            Controller = "Events",
+                            Action = "Index",
+                            CurrentPage = 3,
+                            TotalPages = 15,
+                            RouteParams = new Dictionary<string, string?>()
+                        };
+                    }
+                    <partial name="_PaginationButtons" model="paginationModel" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@section Scripts {
+	<script src="~/lib/virtual-select/js/virtual-select.min.js"></script>
+
+    <script>
+        $('document').ready(() => {
+            VirtualSelect.init({
+                ele: '.multiple-select',
+                dropboxWrapper: 'self',
+                optionsCount: 5,
+                allowNewOption: false,
+                optionsSelectedText: 'options selected',
+                allOptionsSelectedText: 'All',
+                showValueAsTags: true,
+                noOfDisplayValues: 5,
+                alwaysShowSelectedOptionsLabel: false,
+                dropboxWidth: "100%",
+                focusSelectedOptionOnOpen: true,
+                showDropboxAsPopup: true,
+                popupDropboxBreakpoint: '576px',
+                popupPosition: 'center',
+                hideValueTooltipOnSelectAll: true,
+                maxWidth: '100%'
+            });
+        });
+    </script>
+}

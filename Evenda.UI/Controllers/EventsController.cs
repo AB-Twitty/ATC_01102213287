@@ -38,7 +38,13 @@ namespace Evenda.UI.Controllers
             var model = new EventCardsListVM
             {
                 Events = events,
-                TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt).Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() }),
+                TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
+                    .Select(t => new SelectListItem
+                    {
+                        Text = t.Name,
+                        Value = t.Id.ToString(),
+                        Selected = filterDto?.TagIds.Contains(t.Id) ?? false
+                    }),
                 Filter = filterDto ?? new EventFilterDto()
             };
 
@@ -51,6 +57,41 @@ namespace Evenda.UI.Controllers
             var data = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
             return View(data);
         }
+
+        [HttpGet("dashboard/events")]
+        public async Task<IActionResult> DashboardList()
+        {
+            return View();
+        }
+
+        [HttpPost("dashboard/events")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DashboardList(string[] status)
+        {
+            return await DashboardList();
+        }
+
+        #region Create Event
+        [HttpGet("dashboard/events/new")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost("dashboard/events/new")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateEventVM createVM)
+        {
+            if (!ModelState.IsValid)
+                return View(createVM);
+
+            var createDto = new CreateEventDto(createVM);
+
+            var eventId = await ExecuteApiCall(() => _eventApiClient.SendCreateEventReq(createDto));
+
+            return RedirectToAction(nameof(Details), new { id = eventId, name = createVM.Name });
+        }
+        #endregion
 
         #endregion
     }

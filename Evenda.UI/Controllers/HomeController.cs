@@ -13,6 +13,12 @@ namespace Evenda.UI.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();

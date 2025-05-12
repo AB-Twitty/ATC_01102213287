@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="~/favicon.ico" />
     <title>@ViewData["Title"] - Evenda</title>
 
+	<link href="~/lib/virtual-select/css/virtual-select.min.css" rel="stylesheet" />
 	<link href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
 	<link href="~/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
@@ -43,6 +44,23 @@
 	<script src="~/js/inspinia.js"></script>
 
 	<script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+	<script src="~/lib/virtual-select/js/virtual-select.min.js"></script>
+
+    <script>
+        function adjustContentPadding() {
+            const footer = document.getElementById("main-footer");
+            const content = document.getElementById("page-wrapper");
+
+            if (footer && content) {
+                const footerHeight = footer.offsetHeight;
+                content.style.paddingBottom = footerHeight + "px";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", adjustContentPadding);
+        window.addEventListener("resize", adjustContentPadding);
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

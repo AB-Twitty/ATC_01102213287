@@ -1,21 +1,29 @@
-﻿<div class="row border-bottom" style="padding-right: 10px;">
+﻿<div class="row border-bottom">
     <nav class="navbar navbar-top" role="navigation">
         <div class="navbar-header">
-            <a class="navbar-minimalize minimalize-styl-2" href="#" style="margin-top:10px;">
-                <img alt="image" class="img-fluid logo-black mx-auto" style="height:40px;" src="~/img/logo-black.png">
-                <img alt="image" class="img-fluid logo-white mx-auto" style="height:40px;" src="~/img/logo-white.png">
-            </a>
 
-            <div class="d-none d-md-flex">
-                <form role="search" class="navbar-form-custom" action="search_results.html">
-                    <div class="form-group">
-                        <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
-                    </div>
-                </form>
-            </div>
+            @if (ViewBag.NavActive != "Dashboard")
+            {
+                <a class="navbar-minimalize minimalize-styl-2" href="#" style="margin-top:10px;">
+                    <img alt="image" class="img-fluid logo-black mx-auto" style="height:40px;" src="~/img/logo-black.png">
+                    <img alt="image" class="img-fluid logo-white mx-auto" style="height:40px;" src="~/img/logo-white.png">
+                </a>
+
+                <div class="d-none d-md-flex">
+                    <form role="search" class="navbar-form-custom" action="search_results.html">
+                        <div class="form-group">
+                            <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
+                        </div>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-layer-group"></i> </a>
+            }
         </div>
 
-        <ul class="nav navbar-top-links navbar-right">
+        <ul class="nav navbar-top-links navbar-right d-none d-md-flex">
             <li style="padding: 20px">
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
@@ -30,7 +38,16 @@
                     </span>
                 }
             </li>
-            
+
+            <li>
+                <a asp-controller="Home" asp-action="Dashboard"
+                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")"
+                   style="font-size: large;">
+                    Dashboard
+                </a>
+
+            </li>
+
             <li>
                 <a asp-controller="Home" asp-action="Index"
                    class="navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active" : "")"
@@ -51,12 +68,12 @@
 
             <li>
                 <a href="#" class="navbar-top-item position-relative" id="theme-toggle">
-                    <i class="fa fa-moon stretched-link" id="light-theme"></i>
+                    <i class="fa fa-moon stretched-link d-none" id="light-theme"></i>
                     <i class="fa fa-sun stretched-link d-none" id="dark-theme"></i>
                 </a>
             </li>
 
-            @if (User.Identity?.IsAuthenticated ?? false) 
+            @if (User.Identity?.IsAuthenticated ?? false)
             {
                 <li>
                     <a asp-controller="Auth" asp-action="Logout" class="navbar-top-item">
@@ -65,7 +82,7 @@
                     </a>
                 </li>
             }
-            else 
+            else
             {
                 <li>
                     <a asp-controller="Auth" asp-action="Login" class="navbar-top-item">
@@ -74,7 +91,61 @@
                     </a>
                 </li>
             }
-            
+
         </ul>
+
+        <!-- Dropdown menu for small screens -->
+        <div class="dropdown d-md-none m-2">
+            <button class="btn btn-primary" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-list"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li>
+                    <a asp-controller="Home" asp-action="Dashboard"
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Home" asp-action="Index"
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active" : "")">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Events" asp-action="Index"
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active" : "")">
+                        Events
+                    </a>
+                </li>
+                
+                <!--
+                <li>
+                    <a class="dropdown-item" href="#" id="theme-toggle">
+                        <i class="fa fa-moon stretched-link mr-2" id="light-theme"></i>
+                        <i class="fa fa-sun stretched-link d-none mr-2" id="dark-theme"></i>
+                        Theme Mode
+                    </a>
+                </li>
+                -->
+
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Auth" asp-action="Logout">
+                            Log out<i class="fa fa-sign-out ms-2"></i>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Auth" asp-action="Login">
+                            Log in<i class="fa fa-sign-in ms-2"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
     </nav>
 </div>

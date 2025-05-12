@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.NavActive = "Dashboard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="~/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <title>@ViewData["Title"] - Evenda</title>
+
+    <link href="~/lib/summernote/summernote-bs5.css" rel="stylesheet" />
+    <link href="~/lib/summernote/summernote-bs5.min.css" rel="stylesheet" />
+
+    <link href="~/lib/virtual-select/css/virtual-select.min.css" rel="stylesheet" />
+
+	<link href="~/lib/clockpicker/css/jquery-clockpicker.min.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/style.min.css" rel="stylesheet" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <link href="~/css/site.css" rel="stylesheet" />
+
+    <script src="~/js/head.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+
+        <partial name="_SideBar" />
+
+        <div class="gray-bg dashbard-1" id="page-wrapper">
+
+            <partial name="_Navigation" />
+
+            <div class="loadingModal" ng-click="CloseLoading"></div>
+            <form id="LoadingForm">
+                <div class="loadingPopup">
+                    <div style="color:white;background-color:dimgray;" id="waittext">Processing, please wait...</div>
+                    <div class="sk-spinner sk-spinner-wave">
+                        <div class="sk-rect1"></div>
+                        <div class="sk-rect2"></div>
+                        <div class="sk-rect3"></div>
+                        <div class="sk-rect4"></div>
+                        <div class="sk-rect5"></div>
+                    </div>
+                </div>
+            </form>
+
+            @RenderBody()
+
+            <partial name="_Footer" />
+
+        </div>
+    </div>
+
+    <script>
+        window.paceOptions = { ajax: { ignoreURLs: ['mainHub', '__browserLink', 'browserLinkSignalR'], trackWebSockets: false } }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $(document).ajaxStart(function () {
+                Pace.restart();
+                $(".loadingModal").show();
+                $(".loadingPopup").show();
+            });
+
+            $(document).ajaxStop(function () {
+                $(".loadingModal").hide();
+                $(".loadingPopup").hide();
+            });
+        });
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/metismenu/metismenu.min.js"></script>
+    <script src="~/lib/pace/pace.min.js"></script>
+    <script src="~/lib/lucide/lucide.min.js"></script>
+
+    <script src="~/js/inspinia.js"></script>
+
+    <script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+	<script src="~/lib/clockpicker/js/jquery-clockpicker.min.js"></script>
+
+    <script src="~/lib/summernote/summernote-bs5.js"></script>
+    <script src="~/lib/summernote/summernote-bs5.min.js"></script>
+
+    <script src="~/lib/virtual-select/js/virtual-select.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

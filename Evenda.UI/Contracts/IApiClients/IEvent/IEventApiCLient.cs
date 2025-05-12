@@ -7,5 +7,6 @@ namespace Evenda.UI.Contracts.IApiClients.IEvent
     {
         Task<PagedList<EventDto>> SendGetPaginatedEventsReq(int page, int pageSize);
         Task<EventDetailsDto> SendGetEventDetailsReq(Guid eventId);
+        Task<Guid> SendCreateEventReq(CreateEventDto createEventDto);
     }
 }

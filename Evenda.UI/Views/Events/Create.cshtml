@@ -1,0 +1,182 @@
+﻿@model CreateEventVM
+
+@{
+	Layout = "_DashboardLayout";
+	ViewData["Title"] = "New Event";
+}
+
+@section Styles {
+    <style>
+        .image {
+            position: relative;
+        }
+
+        .img-del {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            opacity: 0.3;
+        }
+
+        .img-del:hover {
+            opacity: 1;
+        }
+    </style>
+
+	<link href="~/lib/mdb-flags/css/mdb.min.css" rel="stylesheet" />
+}
+
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li><a class="nav-link active" data-bs-toggle="tab" href="#tab-1" aria-selected="true" role="tab"> Event info</a></li>
+                    <li><a class="nav-link" data-bs-toggle="tab" href="#tab-2" aria-selected="false" tabindex="-1" role="tab"> Data</a></li>
+                    <li><a class="nav-link" data-bs-toggle="tab" href="#tab-3" aria-selected="false" tabindex="-1" role="tab"> Images</a></li>
+                </ul>
+                <form asp-controller="Events" asp-action="Create" method="post"  enctype="multipart/form-data" >
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active" role="tabpanel">
+                            <div class="panel-body">
+
+                                <fieldset>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Name:</label>
+                                        <div class="col-sm-10"><input asp-for="Name" type="text" class="form-control" placeholder="Event name"></div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Price:</label>
+                                        <div class="col-sm-10"><input asp-for="Price" type="text" class="form-control" placeholder="$160.00"></div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Description:</label>
+                                        <div class="col-sm-10">
+                                            <input asp-for="Description" type="hidden" id="description-input" />
+                                            <div class="summernote" style="display: none;">
+                                                <h3>Lorem Ipsum is simply</h3>
+                                                dummy text of the printing and typesetting industry. <strong>Lorem Ipsum has been the industry's</strong> standard dummy text ever since the 1500s,
+                                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic
+                                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic
+                                                typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with
+                                                <br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Category:</label>
+                                        <div class="col-sm-10"><input asp-for="Category" type="text" class="form-control" placeholder="Category"></div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Tags:</label>
+                                        <div class="col-sm-10">
+                                            <select asp-for="StringTags" multiple class="multiple-select" placeholder="Select Tags...">
+                                                <option>opt 1</option>
+                                                <option>opt 2</option>
+                                                <option>opt 3</option>
+                                                <option>opt 4</option>
+                                                <option>opt 5</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane" role="tabpanel">
+                            <div class="panel-body">
+
+                                <fieldset>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">ID:</label>
+                                        <div class="col-sm-10"><input type="text" disabled class="form-control disabled" placeholder="xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx"></div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Country:</label>
+                                        <div class="col-sm-10">
+                                            <select asp-for="Country" id="country-select" placeholder="Select Country..."></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">City:</label>
+                                        <div class="col-sm-10">
+                                            <select asp-for="City" id="city-select" placeholder="Select City..."></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Venue:</label>
+                                        <div class="col-sm-10"><input asp-for="Venue" type="text" class="form-control" placeholder="Venue"></div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Date:</label>
+                                        <div class="col-sm-4 mb-2 mb-md-0">
+                                            <div class="input-group date">
+                                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                <input type="text" class="form-control" id="event-date" placeholder="dd/mm/yyyy">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-1"></div>
+                                        
+                                        <label class="col-sm-1 col-form-label">Time:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group clockpicker">
+                                                <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                                <input type="text" class="form-control" id="event-time" placeholder="hh:mm (AM|PM)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Tickets Quantity:</label>
+                                        <div class="col-sm-10"><input asp-for="TicketsQty" type="text" class="form-control" placeholder="Quantity"></div>
+                                    </div>
+                                </fieldset>
+
+
+                            </div>
+                        </div>
+                        <div id="tab-3" class="tab-pane" role="tabpanel">
+                            <div class="panel-body">
+
+                                <div class="row">
+
+                                    <!--Images-->
+                                    <div class="col-12">
+                                        <button type="button" id="upload-btn" class="btn btn-white" style="margin-right:10px">
+                                            <i class="fa fa-plus" style="margin-right:5px;"></i>
+                                            Upload
+                                        </button>
+                                        <input asp-for="Images" type="file" id="image-input" accept="image/*" style="display:none;" multiple>
+
+                                    </div>
+
+                                    <div class="row" id="images-gallery">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    
+                        <div class="form-group row">
+                            <div class="col-sm-offset-2 m-2">
+                                <button class="btn btn-lg btn-primary " type="submit"><i class="fa fa-check"></i>&nbsp;Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/pages/createevent.js"></script>
+	<script src="~/js/pages/countryandcityselect.js"></script>
+}

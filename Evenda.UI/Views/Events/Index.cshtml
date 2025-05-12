@@ -6,6 +6,7 @@
     ViewData["Title"] = "Events";
 }
 
+
 <div class="wrapper wrapper-content">
     <div class="row">
         <div class="col-lg-12">
@@ -47,8 +48,12 @@
                                         </div>
                                     </div>
                                     <div class="ibox-content ibox-open-border">
-                                        <select asp-for="Filter.Tag" name="tag" class="form-select" asp-items="@Model.TagsSelectItems" >
-                                            <option selected value="">Select Tag...</option>
+                                        <select asp-for="Filter.Tags" name="tags" placeholder="Select Tags..."
+                                            multiple class="multiple-select">
+                                            @foreach(var option in Model.TagsSelectItems) 
+                                            {
+                                                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
@@ -177,7 +182,7 @@
                                     RouteParams = new Dictionary<string, string?>
                                     {
                                     { "category", Model.Filter?.Category },
-                                    { "tag", Model.Filter?.Tag },
+                                    { "tags", Model.Filter?.Tags },
                                     { "from", Model.Filter?.FromDate?.ToString("yyyy-MM-dd") },
                                     { "to", Model.Filter?.ToDate?.ToString("yyyy-MM-dd") }
                                     }
@@ -203,6 +208,25 @@
                 keyboardNavigation: !1,
                 forceParse: !1,
                 autoclose: !0
+            });
+
+            VirtualSelect.init({
+                ele: '.multiple-select',
+                dropboxWrapper: 'self',
+                optionsCount: 5,
+                allowNewOption: false,
+                optionsSelectedText: 'options selected',
+                allOptionsSelectedText: 'All',
+                showValueAsTags: true,
+                noOfDisplayValues: 5,
+                alwaysShowSelectedOptionsLabel: false,
+                dropboxWidth: "100%",
+                focusSelectedOptionOnOpen: true,
+                showDropboxAsPopup: true,
+                popupDropboxBreakpoint: '576px',
+                popupPosition: 'center',
+                hideValueTooltipOnSelectAll: true,
+                maxWidth: '100%'
             });
         });
     </script>

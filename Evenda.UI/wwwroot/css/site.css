@@ -1,3 +1,34 @@
+.loadingModal {
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    z-index: 2060 !important;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.65) !important;
+    opacity: 0.9 !important;
+}
+
+.loadingPopup {
+    z-index: 2061;
+    position: fixed;
+    background-color: transparent;
+    padding: 20px;
+    border-radius: 5px;
+    width: 600px;
+    left: calc(100% - (300px + 50%));
+    top: calc(100% - 50%);
+    display: none;
+}
+
+.loadingPopup div {
+    padding-top: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
 .validation-summary-errors li {
     text-align: justify;
 }
@@ -104,6 +135,104 @@
     padding-right: 50px !important;
 }
 
+.font-lg {
+    font-size: large;
+}
+
 .ibox-open-border {
     border-left: 4px solid #19aa8d;
+}
+
+.vscomp-wrapper.focused .vscomp-toggle-button, .vscomp-wrapper:focus .vscomp-toggle-button {
+    box-shadow: none !important;
+}
+
+.vscomp-wrapper.focused .vscomp-toggle-button {
+    border-color: #1ab394;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+.vscomp-wrapper {
+    color: inherit !important;
+    font-family: inherit !important;
+}
+
+    .vscomp-wrapper.multiple .vscomp-option.selected .checkbox-icon::after,
+    .vscomp-wrapper .checkbox-icon.checked::after {
+        border-color: #1ab394;
+        border-left-color: rgba(0, 0, 0, 0);
+        border-top-color: rgba(0, 0, 0, 0);
+    }
+
+
+::-moz-selection { /* Code for Firefox */
+    color: #fff;
+    background: #1ab394;
+}
+
+::selection {
+    color: #fff;
+    background: #1ab394;
+}
+
+.vscomp-arrow::after {
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-bottom-color: #111;
+    border-right-color: #111;
+}
+
+.vscomp-search-input {
+    color: var(--bs-body-color);
+}
+
+.vscomp-new-option-icon::before {
+    border: 15px solid #1ab394;
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+}
+
+html [data-bs-theme="light"] .vscomp-wrapper {
+    color: #333 !important;
+}
+
+html[data-bs-theme="dark"] .vscomp-toggle-button {
+    background-color: var(--bs-secondary-bg);
+    background-image: var(--bs-form-select-bg-img), var(--bs-form-select-bg-icon, none);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+html[data-bs-theme="dark"] .vscomp-arrow::after {
+    border-bottom-color: var(--bs-body-color);
+    border-right-color: var(--bs-body-color);
+}
+
+html[data-bs-theme="dark"] .pop-comp-wrapper {
+    color: var(--bs-body-color);
+}
+
+html[data-bs-theme="dark"] .vscomp-dropbox {
+    background-color: var(--bs-secondary-bg);
+}
+
+.vscomp-search-container {
+    color: var(--bs-border-color);
+    border-color: var(--bs-border-color);
+    border-bottom: 2px solid;
+}
+
+html[data-bs-theme="dark"] .vscomp-option.focused {
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .vscomp-option.selected {
+    color: #000;
+}
+
+
+.clockpicker-button.pm-button {
+    margin: 3px 1px 1px 1px;
+}
+
+.clockpicker-button.am-button {
+    margin-top: 3px;
 }

@@ -7,13 +7,19 @@ namespace Evenda.UI.Dtos.Event
         [FromQuery(Name = "category")]
         public string Category { get; set; }
 
-        [FromQuery(Name = "tag")]
-        public string Tag { get; set; }
+        [FromQuery(Name = "tags")]
+        public string Tags { get; set; }
 
         [FromQuery(Name = "from")]
         public DateTime? FromDate { get; set; }
 
         [FromQuery(Name = "to")]
         public DateTime? ToDate { get; set; }
+
+        public Guid[] TagIds => Tags?.Split(',')
+            .Select(x => Guid.TryParse(x, out Guid parsedGuid) ? parsedGuid : (Guid?)null)
+            .Where(x => x.HasValue)
+            .Select(x => x.GetValueOrDefault())
+            .ToArray() ?? [];
     }
 }
