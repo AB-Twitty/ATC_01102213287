@@ -14,8 +14,10 @@ namespace Evenda.UI.Dtos.Event
         public string Country { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
+        public DateTime DateTime { get; set; }
 
         public int TicketsQty { get; set; }
+
         public int ThumbnailIdx { get; set; }
         public IList<FileUploadDto> Images { get; set; } = new List<FileUploadDto>();
 
@@ -33,21 +35,22 @@ namespace Evenda.UI.Dtos.Event
             City = @createVM.City;
             Venue = @createVM.Venue;
 
+            DateTime = new DateTime(@createVM.Date.Year, @createVM.Date.Month, @createVM.Date.Day,
+                @createVM.Time.Hour, @createVM.Time.Minute, 0);
+
             TicketsQty = @createVM.TicketsQty;
             ThumbnailIdx = @createVM.ThumbnailIdx;
 
-            ReadImagesFromFiles(@createVM.Images);
         }
 
-        private void ReadImagesFromFiles(IList<IFormFile> imageFiles)
+        public async Task ReadImagesFromFiles(IList<IFormFile> imageFiles)
         {
-            var ms = new MemoryStream();
-
             foreach (var img in imageFiles)
             {
                 try
                 {
-                    img.CopyTo(ms);
+                    using var ms = new MemoryStream();
+                    await img.CopyToAsync(ms);
 
                     var file = new FileUploadDto
                     {
@@ -60,8 +63,6 @@ namespace Evenda.UI.Dtos.Event
                 }
                 catch { }
             }
-
-            ms.Close();
         }
     }
 }

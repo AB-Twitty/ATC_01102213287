@@ -6,9 +6,9 @@ namespace Evenda.Domain.Entities.MediaEntities
 {
     public class Image : BaseEntity
     {
-        public string Path { get; set; }
+        public Byte[] ImageStream { get; set; }
         public string? Name { get; set; }
-        public string Extension { get; set; }
+        public string ContentType { get; set; }
         public bool IsThumbnail { get; set; }
         public Guid EventId { get; set; }
 

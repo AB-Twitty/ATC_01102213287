@@ -1,10 +1,14 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Evenda.UI.Models.EventVM
 {
     public class CreateEventVM
     {
+        public IEnumerable<SelectListItem> TagsSelectItems { get; set; }
+
+
         [Required]
         public string Name { get; set; }
         [Required]
@@ -13,7 +17,7 @@ namespace Evenda.UI.Models.EventVM
         public string Description { get; set; }
         [Required]
         public string Category { get; set; }
-        public string StringTags { get; set; }
+        public string? StringTags { get; set; }
 
         [Required]
         public string Country { get; set; }
@@ -25,6 +29,13 @@ namespace Evenda.UI.Models.EventVM
         [Required]
         [Range(1, Int64.MaxValue, ErrorMessage = "Number of tickets can not be less than 1.")]
         public int TicketsQty { get; set; }
+        [DisplayName("Event Date")]
+        [Required]
+        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        [DisplayName("Event Time")]
+        [Required]
+        public TimeOnly Time { get; set; } = TimeOnly.FromDateTime(DateTime.Now.AddHours(1));
+
 
         public IList<IFormFile> Images { get; set; } = new List<IFormFile>();
 

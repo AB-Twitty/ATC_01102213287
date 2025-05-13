@@ -42,6 +42,11 @@
     background-color: #ff00000a;
 }
 
+    .input-validation-error .vscomp-toggle-button {
+        border-color: red !important;
+        background-color: #ff00000a !important;
+    }
+
 .navigation-link {
     position: relative;
     text-decoration: none;

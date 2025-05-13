@@ -35,7 +35,8 @@ namespace Evenda.UI.ApiClients.Event
 
         public async Task<Guid> SendCreateEventReq(CreateEventDto createEventDto)
         {
-            throw new NotImplementedException();
+            var response = await PostAsync<Guid, CreateEventDto>(ApiEndPoints.CREATE_EVENT, createEventDto);
+            return response.Data;
         }
 
         #endregion

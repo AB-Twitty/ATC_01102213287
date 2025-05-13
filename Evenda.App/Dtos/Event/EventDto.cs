@@ -1,4 +1,5 @@
-﻿using EventEntity = Evenda.Domain.Entities.EventEntities.Event;
+﻿using Evenda.App.Dtos.Media;
+using EventEntity = Evenda.Domain.Entities.EventEntities.Event;
 
 namespace Evenda.App.Dtos.Event
 {
@@ -14,7 +15,7 @@ namespace Evenda.App.Dtos.Event
         public string Category { get; set; }
         public DateTime DateTime { get; set; }
 
-        public string? ImagePath { get; set; }
+        public FileUploadDto? Image { get; set; }
 
         public IList<string> Tags { get; set; }
 
@@ -32,8 +33,6 @@ namespace Evenda.App.Dtos.Event
             Price = @event.Price;
             Category = @event.Category;
             DateTime = @event.DateTime;
-
-            ImagePath = @event?.Images?.Where(x => x.IsThumbnail).FirstOrDefault()?.Path;
 
             Tags = @event?.Tags?.Select(x => x.Name).ToList() ?? new List<string>();
         }

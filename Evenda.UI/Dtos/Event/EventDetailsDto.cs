@@ -1,4 +1,6 @@
-﻿namespace Evenda.UI.Dtos.Event
+﻿using Evenda.UI.Dtos.Media;
+
+namespace Evenda.UI.Dtos.Event
 {
     public class EventDetailsDto
     {
@@ -12,6 +14,6 @@
         public string Category { get; set; }
         public DateTime DateTime { get; set; }
 
-        public IList<ImageDto> Images { get; set; }
+        public IList<FileUploadDto> Images { get; set; }
     }
 }

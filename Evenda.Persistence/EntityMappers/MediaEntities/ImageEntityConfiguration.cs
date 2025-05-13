@@ -9,28 +9,29 @@ namespace Evenda.Persistence.EntityMappers.MediaEntities
     {
         public override void Configure(EntityTypeBuilder<Image> builder)
         {
-            builder.ToTable(t =>
+            builder.ToTable("images", t =>
             {
-                t.HasCheckConstraint("CK_Image_Extension", "extension IN ('jpg', 'jpeg', 'png')");
+                t.HasCheckConstraint("CK_Image_Content_Type", "content_type IN ('image/jpg', 'image/jpeg', 'image/png')");
             });
 
             builder.Property(i => i.Name)
                 .HasColumnName("name")
                 .IsRequired(false);
 
-            builder.Property(i => i.Path)
-                .HasColumnName("path")
+            builder.Property(i => i.ImageStream)
+                .HasColumnName("image_stream")
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasColumnType("varbinary(MAX)");
 
-            builder.Property(i => i.Extension)
-                .HasColumnName("extension")
+
+            builder.Property(i => i.ContentType)
+                .HasColumnName("content_type")
                 .IsRequired()
-                .HasMaxLength(10);
+                .HasMaxLength(15);
 
             builder.Property(i => i.IsThumbnail)
                 .HasColumnName("is_thumbnail")
-                .HasDefaultValue(true);
+                .HasDefaultValue(false);
 
             builder.Property(i => i.EventId)
                 .HasColumnName("event_id")

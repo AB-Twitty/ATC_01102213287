@@ -73,9 +73,18 @@ namespace Evenda.UI.Controllers
 
         #region Create Event
         [HttpGet("dashboard/events/new")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
+            var tagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
+                .Select(t => new SelectListItem
+                {
+                    Text = t.Name,
+                    Value = t.Id.ToString(),
+                    Selected = false
+                });
+
+            return View(new CreateEventVM { TagsSelectItems = tagsSelectItems });
         }
 
         [HttpPost("dashboard/events/new")]
@@ -83,9 +92,27 @@ namespace Evenda.UI.Controllers
         public async Task<IActionResult> Create(CreateEventVM createVM)
         {
             if (!ModelState.IsValid)
+            {
+                var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
+                createVM.TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
+                    .Select(t => new SelectListItem
+                    {
+                        Text = t.Name,
+                        Value = t.Id.ToString(),
+                        Selected = createVM.StringTags?.Split(',').Contains(t.Id.ToString()) ?? false
+                    })
+                    .Union(createVM.StringTags?.Split(',').Select(x => new SelectListItem
+                    {
+                        Text = x,
+                        Value = x,
+                        Selected = true
+                    }) ?? [])
+                    .GroupBy(i => i.Value).SelectMany(g => g.Take(1));
                 return View(createVM);
+            }
 
             var createDto = new CreateEventDto(createVM);
+            await createDto.ReadImagesFromFiles(createVM.Images);
 
             var eventId = await ExecuteApiCall(() => _eventApiClient.SendCreateEventReq(createDto));
 

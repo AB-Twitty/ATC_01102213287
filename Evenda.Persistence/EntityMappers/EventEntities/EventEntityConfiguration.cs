@@ -49,12 +49,17 @@ namespace Evenda.Persistence.EntityMappers.EventEntities
                 .HasColumnName("date_time")
                 .IsRequired();
 
+            builder.Property(e => e.TicketsQuantity)
+                .HasColumnName("tickets_quantity")
+                .IsRequired()
+                .HasDefaultValue(0);
+
             builder
                 .HasMany(e => e.Images)
                 .WithOne(i => i.Event)
                 .HasForeignKey(e => e.EventId);
 
-            builder.HasIndex(e => e.Category).IsUnique();
+            builder.HasIndex(e => e.Category).IsUnique(false);
 
             base.Configure(builder);
         }

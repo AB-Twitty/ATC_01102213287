@@ -1,4 +1,4 @@
-﻿using Evenda.Domain.Entities.MediaEntities;
+﻿using Evenda.App.Dtos.Media;
 
 using EventEntity = Evenda.Domain.Entities.EventEntities.Event;
 
@@ -16,7 +16,7 @@ namespace Evenda.App.Dtos.Event
         public string Category { get; set; }
         public DateTime DateTime { get; set; }
 
-        public IList<Image> Images { get; set; }
+        public IList<FileUploadDto> Images { get; set; }
 
         public EventDetailsDto()
         {
@@ -35,7 +35,8 @@ namespace Evenda.App.Dtos.Event
             Category = @event.Category;
             DateTime = @event.DateTime;
 
-            Images = @event.Images?.ToList() ?? new List<Image>();
+            Images = @event.Images?.OrderByDescending(i => i.IsThumbnail)
+                .Select(img => new FileUploadDto(img)).ToList() ?? new List<FileUploadDto>();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Evenda.API.Controllers.Base;
 using Evenda.App.Contracts.IServices.IEvent;
+using Evenda.App.Dtos.Event;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Evenda.API.Controllers
@@ -34,6 +35,13 @@ namespace Evenda.API.Controllers
         public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
         {
             var response = await _eventService.GetEventDetails(eventId);
+            return HandleResponse(response);
+        }
+
+        [HttpPost("new")]
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto createEventDto)
+        {
+            var response = await _eventService.CreateEvent(createEventDto);
             return HandleResponse(response);
         }
         #endregion

@@ -7,7 +7,7 @@ namespace Evenda.App.Validators.AuthValidators
 {
     public class RegisterDtoValidator : IValidator<RegisterDto>
     {
-        public ValidationResult Validate(RegisterDto dto)
+        public override ValidationResult Validate(RegisterDto dto)
         {
             var result = new ValidationResult();
 

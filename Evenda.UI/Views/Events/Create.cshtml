@@ -47,40 +47,33 @@
 
                                 <fieldset>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Name:</label>
+                                        <label class="col-sm-2 col-form-label">Name<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10"><input asp-for="Name" type="text" class="form-control" placeholder="Event name"></div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Price:</label>
+                                        <label class="col-sm-2 col-form-label">Price<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10"><input asp-for="Price" type="text" class="form-control" placeholder="$160.00"></div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Description:</label>
+                                        <label class="col-sm-2 col-form-label">Description<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10">
                                             <input asp-for="Description" type="hidden" id="description-input" />
                                             <div class="summernote" style="display: none;">
-                                                <h3>Lorem Ipsum is simply</h3>
-                                                dummy text of the printing and typesetting industry. <strong>Lorem Ipsum has been the industry's</strong> standard dummy text ever since the 1500s,
-                                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic
-                                                when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic
-                                                typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with
-                                                <br>
+                                                @Html.Raw(Model.Description)
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Category:</label>
+                                        <label class="col-sm-2 col-form-label">Category<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10"><input asp-for="Category" type="text" class="form-control" placeholder="Category"></div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Tags:</label>
                                         <div class="col-sm-10">
                                             <select asp-for="StringTags" multiple class="multiple-select" placeholder="Select Tags...">
-                                                <option>opt 1</option>
-                                                <option>opt 2</option>
-                                                <option>opt 3</option>
-                                                <option>opt 4</option>
-                                                <option>opt 5</option>
+                                                @foreach(var tag in Model.TagsSelectItems) {
+                                                    <option value="@tag.Value" selected="@tag.Selected">@tag.Text</option>
+                                                }
                                             </select>
                                         </div>
                                     </div>
@@ -97,42 +90,46 @@
                                         <div class="col-sm-10"><input type="text" disabled class="form-control disabled" placeholder="xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx"></div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Country:</label>
+                                        <label class="col-sm-2 col-form-label">Country<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10">
-                                            <select asp-for="Country" id="country-select" placeholder="Select Country..."></select>
+                                            <select asp-for="Country" id="country-select" placeholder="Select Country...">
+                                                @if(!string.IsNullOrEmpty(Model.Country)) {
+                                                    <option value="@Model.Country" selected>@Model.Country</option>
+                                                }
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">City:</label>
+                                        <label class="col-sm-2 col-form-label">City<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10">
                                             <select asp-for="City" id="city-select" placeholder="Select City..."></select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Venue:</label>
+                                        <label class="col-sm-2 col-form-label">Venue<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10"><input asp-for="Venue" type="text" class="form-control" placeholder="Venue"></div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Date:</label>
+                                        <label class="col-sm-2 col-form-label">Date<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-4 mb-2 mb-md-0">
                                             <div class="input-group date">
                                                 <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" id="event-date" placeholder="dd/mm/yyyy">
+                                                <input asp-for="Date" type="text" class="form-control" id="event-date" placeholder="mm/dd/yyyy">
                                             </div>
                                         </div>
 
                                         <div class="col-sm-1"></div>
                                         
-                                        <label class="col-sm-1 col-form-label">Time:</label>
+                                        <label class="col-sm-1 col-form-label">Time<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-4">
                                             <div class="input-group clockpicker">
                                                 <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
-                                                <input type="text" class="form-control" id="event-time" placeholder="hh:mm (AM|PM)">
+                                                <input asp-for="Time" type="text" class="form-control" id="event-time" placeholder="hh:mm (AM|PM)">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Tickets Quantity:</label>
+                                        <label class="col-sm-2 col-form-label">Tickets Quantity<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10"><input asp-for="TicketsQty" type="text" class="form-control" placeholder="Quantity"></div>
                                     </div>
                                 </fieldset>

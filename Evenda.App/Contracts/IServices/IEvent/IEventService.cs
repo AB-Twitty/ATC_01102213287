@@ -8,5 +8,6 @@ namespace Evenda.App.Contracts.IServices.IEvent
     {
         Task<DataResponse<PagedList<EventDto>>> GetEventsPaginated(int page, int pageSize);
         Task<DataResponse<EventDetailsDto>> GetEventDetails(Guid eventId);
+        Task<DataResponse<Guid>> CreateEvent(CreateEventDto createDto);
     }
 }

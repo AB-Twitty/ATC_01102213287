@@ -5,7 +5,7 @@
         keyboardNavigation: false,
         forceParse: false,
         autoclose: true,
-        format: "dd/mm/yyyy",
+        format: "mm/dd/yyyy",
         startDate: new Date()
     });
 

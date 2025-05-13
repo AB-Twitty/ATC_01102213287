@@ -4,6 +4,7 @@ using Evenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Evenda.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512162017_ContentStream_Bytes_Images_Table")]
+    partial class ContentStream_Bytes_Images_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,11 +113,10 @@ namespace Evenda.Persistence.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("ContentType")
+                    b.Property<byte[]>("ContentStream")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasColumnName("content_type");
+                        .HasColumnType("varbinary")
+                        .HasColumnName("content_stream");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
@@ -126,10 +128,11 @@ namespace Evenda.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("event_id");
 
-                    b.Property<byte[]>("ImageStream")
+                    b.Property<string>("Extension")
                         .IsRequired()
-                        .HasColumnType("varbinary(MAX)")
-                        .HasColumnName("image_stream");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("extension");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -157,7 +160,7 @@ namespace Evenda.Persistence.Migrations
 
                     b.ToTable("images", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Image_Content_Type", "content_type IN ('image/jpg', 'image/jpeg', 'image/png')");
+                            t.HasCheckConstraint("CK_Image_Extension", "extension IN ('jpg', 'jpeg', 'png')");
                         });
                 });
 
