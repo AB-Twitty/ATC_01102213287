@@ -131,7 +131,8 @@ namespace Evenda.Persistence.Repositories
                 source: entityList.Items.Select(mapFunc).ToList(),
                 pageIndex: entityList.PageIndex,
                 pageSize: entityList.PageSize,
-                totalCount: entityList.TotalCount
+                totalCount: entityList.TotalCount,
+                filterCount: entityList.FilterCount
             );
 
             return pagedList;
@@ -146,12 +147,12 @@ namespace Evenda.Persistence.Repositories
             pageSize = pageSize < 1 ? 12 : pageSize;
             pageSize = pageSize > 100 ? 100 : pageSize;
 
-            int totalCount = 0;
             List<TEntity> items = [];
 
             var query = Entities.AsQueryable().AsNoTracking();
             if (include != null) query = include(query);
 
+            int totalCount = query.Count();
             query = query.Where(predicate);
 
             if (orderBy != null)
@@ -162,20 +163,21 @@ namespace Evenda.Persistence.Repositories
             }
 
             var result = await query
-                .Select(e => new { TotalCount = query.Count(), Item = e })
+                .Select(e => new { FilterCount = query.Count(), Item = e })
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
+            int filterCount = totalCount;
             if (result.Count != 0)
             {
-                totalCount = result.First().TotalCount;
+                filterCount = result.First().FilterCount;
                 items = result.Select(r => r.Item).ToList();
             }
 
             query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
-            return new PagedList<TEntity>(items, pageNumber, pageSize, totalCount);
+            return new PagedList<TEntity>(items, pageNumber, pageSize, totalCount, filterCount);
         }
 
         public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate,

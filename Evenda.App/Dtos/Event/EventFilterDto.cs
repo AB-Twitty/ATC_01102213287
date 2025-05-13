@@ -1,4 +1,4 @@
-﻿namespace Evenda.UI.Dtos.Event
+﻿namespace Evenda.App.Dtos.Event
 {
     public class EventFilterDto
     {
@@ -13,15 +13,5 @@
             .Where(x => x.HasValue)
             .Select(x => x.GetValueOrDefault())
             .ToArray() ?? [];
-
-        public EventFilterDto(EventFilterVM filterVM)
-        {
-            Category = filterVM.Category == "all" ? null : filterVM.Category;
-            Tags = filterVM.Tags;
-            FromDate = filterVM.FromDate;
-            ToDate = filterVM.ToDate;
-
-            Search = filterVM.Search;
-        }
     }
 }

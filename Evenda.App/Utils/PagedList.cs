@@ -2,13 +2,13 @@
 {
     public partial class PagedList<T>
     {
-        public PagedList(IList<T> source, int pageIndex, int pageSize, int totalCount, int? filterCount = null)
+        public PagedList(IList<T> source, int pageIndex, int pageSize, int totalCount, int filterCount)
         {
             PageIndex = pageIndex;
             PageSize = pageSize;
             TotalCount = totalCount;
-            FilterCount = totalCount;
-            TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+            FilterCount = filterCount;
+            TotalPages = (int)Math.Ceiling(FilterCount / (double)PageSize);
             Items = source;
         }
 

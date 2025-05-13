@@ -50,6 +50,13 @@ namespace Evenda.App.Services.Media
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task<Image?> GetEventThumbnailImg(Guid eventId)
+        {
+            return await _imageRepo.FirstOrDefaultAsync(
+                        predicate: e => e.EventId == eventId && e.IsThumbnail
+                    );
+        }
+
         #endregion
     }
 }

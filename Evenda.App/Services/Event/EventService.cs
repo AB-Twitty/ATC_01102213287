@@ -11,7 +11,7 @@ using Evenda.App.Utils;
 using Evenda.Domain.Entities.MediaEntities;
 using Evenda.Services.Services.Base;
 using Microsoft.EntityFrameworkCore;
-
+using System.Linq.Expressions;
 using EventEntity = Evenda.Domain.Entities.EventEntities.Event;
 using TagEntity = Evenda.Domain.Entities.TagEntities.Tag;
 
@@ -44,9 +44,33 @@ namespace Evenda.App.Services.Event
 
         #endregion
 
+        #region Utils
+
+        protected virtual Expression<Func<EventEntity, object>> GenerateSortingExpression(string? sort)
+        {
+            var allowedSorts = new[] { "date_time", "name", "price", "#tickets", "#booked" };
+
+            if (string.IsNullOrWhiteSpace(sort) || !allowedSorts.Contains(sort))
+            {
+                sort = allowedSorts[0];
+            }
+
+            return sort switch
+            {
+                "date_time" => x => x.DateTime,
+                "name" => x => x.Name,
+                "price" => x => x.Price,
+                "#tickets" => x => x.TicketsQuantity,
+                "#booked" => x => x.TicketsQuantity,
+                _ => x => x.DateTime
+            };
+        }
+
+        #endregion
+
         #region Methods
 
-        public async Task<DataResponse<PagedList<EventDto>>> GetEventsPaginated(int page, int pageSize)
+        public async Task<DataResponse<PagedList<EventDto>>> GetEventsPaginated(int page, int pageSize, bool includeThumbnailImg = false)
         {
             PagedList<EventDto> pagedList = await _eventRepo.FindPaginatedAsync(
                 predicate: x => !x.IsDeleted,
@@ -58,14 +82,48 @@ namespace Evenda.App.Services.Event
                 orderByDescending: false
             );
 
-            foreach (var eventDto in pagedList.Items)
+            if (includeThumbnailImg)
             {
-                var img = await _imageRepo.FirstOrDefaultAsync(
-                    predicate: e => e.EventId == eventDto.Id && e.IsThumbnail
-                );
+                foreach (var eventDto in pagedList.Items)
+                {
+                    var img = await _imageService.GetEventThumbnailImg(eventDto.Id);
 
-                if (img != null)
-                    eventDto.Image = new FileUploadDto(img);
+                    if (img != null)
+                        eventDto.Image = new FileUploadDto(img);
+                }
+            }
+
+            return Success(pagedList);
+        }
+
+        public async Task<DataResponse<PagedList<EventDto>>> GetFilteredEventsPaginated(PaginationModel pagination, EventFilterDto filterDto, bool includeThumbnailImg = false)
+        {
+            Expression<Func<EventEntity, bool>> filterPredicate = x => !x.IsDeleted
+                && (string.IsNullOrEmpty(filterDto.Search) || x.Name.ToLower().Contains(filterDto.Search.ToLower()))
+                && (string.IsNullOrEmpty(filterDto.Category) || x.Name.ToLower() == filterDto.Category.ToLower())
+                && (filterDto.TagIds.Count() == 0 || x.Tags.Any(t => filterDto.TagIds.Contains(t.Id)))
+                && (filterDto.FromDate == null || x.DateTime.Date >= filterDto.FromDate.Value.ToDateTime(TimeOnly.MinValue))
+                && (filterDto.ToDate == null || x.DateTime.Date <= filterDto.ToDate.Value.ToDateTime(TimeOnly.MinValue));
+
+            PagedList<EventDto> pagedList = await _eventRepo.FindPaginatedAsync(
+                predicate: filterPredicate,
+                pageNumber: pagination.Page,
+                pageSize: pagination.PageSize,
+                mapFunc: e => new EventDto(e),
+                include: x => x.Include(x => x.Tags),
+                orderBy: GenerateSortingExpression(pagination.Sort),
+                orderByDescending: pagination.IsOrderDesc()
+            );
+
+            if (includeThumbnailImg)
+            {
+                foreach (var eventDto in pagedList.Items)
+                {
+                    var img = await _imageService.GetEventThumbnailImg(eventDto.Id);
+
+                    if (img != null)
+                        eventDto.Image = new FileUploadDto(img);
+                }
             }
 
             return Success(pagedList);

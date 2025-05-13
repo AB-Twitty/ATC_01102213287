@@ -241,3 +241,7 @@ html[data-bs-theme="dark"] .vscomp-option.selected {
 .clockpicker-button.am-button {
     margin-top: 3px;
 }
+
+.issue-info {
+    width: 40%;
+}

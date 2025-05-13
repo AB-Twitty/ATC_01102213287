@@ -7,7 +7,7 @@ namespace Evenda.UI.Models.EventVM
     public class EventCardsListVM
     {
         public PagedList<EventDto> Events { get; set; } = new PagedList<EventDto>();
-        public EventFilterDto Filter { get; set; } = new EventFilterDto();
+        public EventFilterDto Filter { get; set; }
 
         // Filteration Data
         public IEnumerable<SelectListItem> TagsSelectItems { get; set; }

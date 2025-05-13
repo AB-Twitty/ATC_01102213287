@@ -1,4 +1,5 @@
-﻿using Evenda.UI.Dtos.Event;
+﻿using Evenda.UI.Dtos;
+using Evenda.UI.Dtos.Event;
 using Evenda.UI.Helpers;
 
 namespace Evenda.UI.Contracts.IApiClients.IEvent
@@ -6,6 +7,7 @@ namespace Evenda.UI.Contracts.IApiClients.IEvent
     public interface IEventApiCLient
     {
         Task<PagedList<EventDto>> SendGetPaginatedEventsReq(int page, int pageSize);
+        Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto);
         Task<EventDetailsDto> SendGetEventDetailsReq(Guid eventId);
         Task<Guid> SendCreateEventReq(CreateEventDto createEventDto);
     }

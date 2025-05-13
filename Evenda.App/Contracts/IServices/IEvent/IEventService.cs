@@ -6,7 +6,8 @@ namespace Evenda.App.Contracts.IServices.IEvent
 {
     public interface IEventService
     {
-        Task<DataResponse<PagedList<EventDto>>> GetEventsPaginated(int page, int pageSize);
+        Task<DataResponse<PagedList<EventDto>>> GetEventsPaginated(int page, int pageSize, bool includeThumbnailImg = false);
+        Task<DataResponse<PagedList<EventDto>>> GetFilteredEventsPaginated(PaginationModel pagination, EventFilterDto filterDto, bool includeThumbnailImg = false);
         Task<DataResponse<EventDetailsDto>> GetEventDetails(Guid eventId);
         Task<DataResponse<Guid>> CreateEvent(CreateEventDto createDto);
     }

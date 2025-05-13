@@ -1,4 +1,5 @@
 ﻿using Evenda.UI.Contracts.IApiClients.IEvent;
+using Evenda.UI.Dtos;
 using Evenda.UI.Dtos.Event;
 using Evenda.UI.Helpers;
 
@@ -24,6 +25,13 @@ namespace Evenda.UI.ApiClients.Event
         public async Task<PagedList<EventDto>> SendGetPaginatedEventsReq(int page, int pageSize)
         {
             var response = await GetAsync<PagedList<EventDto>>(string.Format(ApiEndPoints.GET_PAGINATED_EVENTS, page, pageSize));
+            return response.Data;
+        }
+
+        public async Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto)
+        {
+            var formattedUrl = string.Format(ApiEndPoints.GET_FILTERED_EVENTS_PAGINATED, pagination.Page, pagination.PageSize, pagination.Sort, pagination.SortDir);
+            var response = await PostAsync<PagedList<EventDto>, EventFilterDto>(formattedUrl, filterDto);
             return response.Data;
         }
 

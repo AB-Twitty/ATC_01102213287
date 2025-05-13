@@ -1,6 +1,7 @@
 ﻿using Evenda.API.Controllers.Base;
 using Evenda.App.Contracts.IServices.IEvent;
 using Evenda.App.Dtos.Event;
+using Evenda.App.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Evenda.API.Controllers
@@ -25,9 +26,17 @@ namespace Evenda.API.Controllers
         #region Actions
 
         [HttpGet("paginated")]
-        public async Task<IActionResult> GetEventsPaginated([FromQuery] int page, int pageSize = 12)
+        public async Task<IActionResult> GetEventsPaginated([FromQuery] PaginationModel pagination, [FromBody] EventFilterDto filterDto)
         {
-            var response = await _eventService.GetEventsPaginated(page, pageSize);
+            var response = await _eventService.GetEventsPaginated(pagination.Page, pagination.PageSize);
+            return HandleResponse(response);
+        }
+
+        [HttpPost("filter/paginated")]
+        public async Task<IActionResult> GetFilteredEventsPaginated([FromQuery] PaginationModel pagination,
+            [FromBody] EventFilterDto filterDto)
+        {
+            var response = await _eventService.GetFilteredEventsPaginated(pagination, filterDto);
             return HandleResponse(response);
         }
 

@@ -1,5 +1,7 @@
 ﻿using Evenda.UI.Contracts.IApiClients.IEvent;
 using Evenda.UI.Contracts.IApiClients.ITag;
+using Evenda.UI.Contracts.IHelper;
+using Evenda.UI.Dtos;
 using Evenda.UI.Dtos.Event;
 using Evenda.UI.Models.EventVM;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +15,17 @@ namespace Evenda.UI.Controllers
 
         private readonly IEventApiCLient _eventApiClient;
         private readonly ITagApiClient _tagApiClient;
+        private readonly IDropdownHelper _dropdownHelper;
 
         #endregion
 
         #region Ctor
 
-        public EventsController(IEventApiCLient eventApiClient, ITagApiClient tagApiClient)
+        public EventsController(IEventApiCLient eventApiClient, ITagApiClient tagApiClient, IDropdownHelper dropdownHelper)
         {
             _eventApiClient = eventApiClient;
             _tagApiClient = tagApiClient;
+            _dropdownHelper = dropdownHelper;
         }
 
         #endregion
@@ -31,7 +35,7 @@ namespace Evenda.UI.Controllers
         [HttpGet("events")]
         public async Task<IActionResult> Index([FromQuery] int pg = 1, [FromQuery] EventFilterDto? filterDto = null)
         {
-            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedEventsReq(pg, 8));
+            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedEventsReq(pg, 12));
 
             var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
 
@@ -45,7 +49,7 @@ namespace Evenda.UI.Controllers
                         Value = t.Id.ToString(),
                         Selected = filterDto?.TagIds.Contains(t.Id) ?? false
                     }),
-                Filter = filterDto ?? new EventFilterDto()
+                Filter = filterDto
             };
 
             return View(model);
@@ -59,16 +63,23 @@ namespace Evenda.UI.Controllers
         }
 
         [HttpGet("dashboard/events")]
-        public async Task<IActionResult> DashboardList()
+        public async Task<IActionResult> DashboardList([FromQuery] EventFilterVM filterVM, [FromQuery] int pg = 1)
         {
-            return View();
-        }
+            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedFilteredEvents(new PaginationDto
+            {
+                Page = pg,
+                PageSize = filterVM.TableSize,
+                Sort = filterVM.Sort,
+                SortDir = filterVM.SortDir
+            }, new EventFilterDto(filterVM)));
 
-        [HttpPost("dashboard/events")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DashboardList(string[] status)
-        {
-            return await DashboardList();
+            var model = new DashboardEventListVM
+            {
+                Filter = filterVM,
+                Events = events
+            };
+
+            return View(model);
         }
 
         #region Create Event

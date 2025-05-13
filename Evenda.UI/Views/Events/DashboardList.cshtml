@@ -1,48 +1,68 @@
-﻿
+﻿@using Evenda.UI.Contracts.IHelper
+
+@model DashboardEventListVM
+@inject IDropdownHelper _dropdownHelper
 
 @{
-	Layout = "_DashboardLayout";
-	ViewData["Title"] = "Events - Dashboard";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Events - Dashboard";
+
+    var tagSelect = await _dropdownHelper.GetTagSelectItems(OnlyInUse: true);
+    var categorySelect = (await _dropdownHelper.GetCatgorySelectItems())
+        .Prepend(new SelectListItem { Text = "All", Value = "all" });
+
+    var routeParams = new Dictionary<string, string?>
+    {
+        { "sz", Model.Filter.TableSize.ToString() },
+        { "search", Model.Filter.Search },
+        { "category", Model.Filter.Category },
+        { "tags", Model.Filter.Tags },
+        { "from", Model.Filter.FromDate?.ToString() },
+        { "to", Model.Filter.ToDate?.ToString() }
+    };
 }
 
 @section Styles {
-	<link href="~/lib/virtual-select/css/virtual-select.min.css" rel="stylesheet" />
+    <link href="~/lib/virtual-select/css/virtual-select.min.css" rel="stylesheet" />
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="ibox-content mb-2 border-bottom">
-        <form method="Post" asp-controller="Events" asp-action="DashboardList">
+        <form method="Get" asp-controller="Events" asp-action="DashboardList" id="filter-form">
+            <input hidden asp-for="Filter.Sort" name="sort" />
+            <input hidden asp-for="Filter.SortDir" name="dir" />
+            <input hidden asp-for="Filter.TableSize" name="sz" id="table-size-input" />
+
             <div class="row">
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label class="col-form-label" for="status">Status</label>
-                        <select name="status" id="status" multiple class="multiple-select">
-                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
-                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
-                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
-                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        <select id="status" multiple class="multiple-select" placeholder="Select Statuses...">
+                            <option value="1" selected>Upcoming</option>
+                            <option value="2" selected>Finished</option>
+                            <option value="3" selected>Canceled</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-8">
                     <div class="form-group">
                         <label class="col-form-label" for="status">Tags</label>
-                        <select name="tags" id="status" multiple class="multiple-select">
-                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
-                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
-                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
-                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        <select asp-for="Filter.Tags" name="tags" id="status" multiple class="multiple-select" placeholder="Select Tags...">
+                            @foreach(var tag in tagSelect) {
+                                bool selected = Model.Filter?.TagIds.Contains(Guid.Parse(tag.Value)) ?? false;
+                                <option value="@tag.Value" selected="@selected">@tag.Text</option>
+                            }
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label class="col-form-label" for="status">Category</label>
-                        <select name="category" id="status" class="multiple-select">
-                            <option value="@Guid.NewGuid().ToString()" selected="">Enabled</option>
-                            <option value="@Guid.NewGuid().ToString()">Disabled</option>
-                            <option value="@Guid.NewGuid().ToString()">dis 1</option>
-                            <option value="@Guid.NewGuid().ToString()">Dis 2</option>
+                        <select asp-for="Filter.Category" name="category" id="status" class="multiple-select">
+							@foreach (var category in categorySelect)
+							{
+								<option value="@category.Value" selected="@category.Selected">@category.Text</option>
+							}
                         </select>
                     </div>
                 </div>
@@ -50,9 +70,9 @@
                     <div class="form-group">
                         <label class="col-form-label" for="status">Date</label>
                         <div class="input-daterange input-group" id="rangeDatepicker">
-                            <input type="text" class="form-control" name="start" value="05/14/2025">
+                            <input asp-for="Filter.FromDate" type="text" class="form-control" name="from" placeholder="mm/dd/yyyy">
                             <span class="input-group-text">to</span>
-                            <input type="text" class="form-control" name="end" value="05/22/2025">
+                            <input asp-for="Filter.ToDate" type="text" class="form-control" name="to" placeholder="mm/dd/yyyy">
                         </div>
                     </div>
                 </div>
@@ -71,7 +91,7 @@
         <div class="col-lg-12">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h5>Events</h5>
+                    <h5><i class="fa fa-list me-1"></i>Events</h5>
                     <div class="ibox-tools">
                         <a asp-controller="Events" asp-action="Create"  class="btn btn-primary btn-xs">Add Event <i class="fa fa-plus"></i></a>
                     </div>
@@ -80,25 +100,26 @@
 
                     <div class="mb-3">
 
-                        <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" placeholder="Search event by name...">
-                            <button class="btn btn-white" type="button">Search</button>
-                        </div>
-
+                        <form asp-controller="Events" asp-action="DashboardList" method="get" id="form-search">
+                            <input hidden asp-for="Filter.TableSize" name="sz" id="table-size-input" />
+                            <div class="input-group input-group-sm">
+                                <input asp-for="Filter.Search" name="search" type="text" class="form-control" id="search-input" placeholder="Search event by name...">
+                                <button class="btn btn-white" type="submit">Search</button>
+                            </div>
+                        </form>
+                        
                         <div class="mt-3">
 
                             <div class="float-end">
-                                <select class="form-select">
-                                    <option selected>10</option>
-                                    <option>25</option>
-                                    <option>50</option>
-                                    <option>75</option>
-                                    <option>100</option>
+                                <select asp-items="Model.TableSizeSelect" asp-for="Filter.TableSize" class="form-select" id="table-size-select" >
                                 </select>
                             </div>
 
-                            <strong>Found 61 record filtered from 210 records.</strong>
-
+                            <strong>
+                                Displaying @((Model.Events.PageIndex - 1) * Model.Events.PageSize + 1)–
+                                @(Math.Min(Model.Events.PageIndex * Model.Events.PageSize, Model.Events.FilterCount))
+                                of @Model.Events.FilterCount filtered entries (from @Model.Events.TotalCount total records).
+                            </strong>
                         </div>
 
                     </div>
@@ -108,285 +129,113 @@
                             <thead class="ff-secondary">
                                 <tr>
                                     <th>#</th>
-                                    <th>Event</th>
+                                    <th>
+                                        Event
+                                        <partial name="_SortingLink" 
+                                                model="@(new SortingLinkModel 
+                                                {
+                                                    Sort = SortColumns.Name, 
+                                                    SortDir = Model.Filter.SortDir,
+                                                    IsActive = Model.Filter.Sort == SortColumns.Name,
+                                                    RouteParams = routeParams
+                                                })" />
+                                    </th>
+                                    <th>
+                                        Price
+                                        <partial name="_SortingLink"
+                                                 model="@(new SortingLinkModel
+                                                {
+                                                    Sort = SortColumns.Price,
+                                                    SortDir = Model.Filter.SortDir,
+                                                    IsActive = Model.Filter.Sort == SortColumns.Price,
+                                                    RouteParams = routeParams
+                                                })" />
+                                    </th>
                                     <th>Category</th>
-                                    <th>Date</th>
-                                    <th>Tickets</th>
+                                    <th>
+                                        Date
+                                        <partial name="_SortingLink"
+                                                 model="@(new SortingLinkModel
+                                                {
+                                                    Sort = SortColumns.DateTime,
+                                                    SortDir = Model.Filter.SortDir,
+                                                    IsActive = Model.Filter.Sort == SortColumns.DateTime,
+                                                    RouteParams = routeParams
+                                                })" />
+                                    </th>
+                                    <th>
+                                        #Tickets
+                                        <partial name="_SortingLink"
+                                                 model="@(new SortingLinkModel
+                                                {
+                                                    Sort = SortColumns.Tickets,
+                                                    SortDir = Model.Filter.SortDir,
+                                                    IsActive = Model.Filter.Sort == SortColumns.Tickets,
+                                                    RouteParams = routeParams
+                                                })" />
+                                    </th>
+                                    <th>
+                                        #Booked
+                                        <partial name="_SortingLink"
+                                                 model="@(new SortingLinkModel
+                                                {
+                                                    Sort = SortColumns.Booked,
+                                                    SortDir = Model.Filter.SortDir,
+                                                    IsActive = Model.Filter.Sort == SortColumns.Booked,
+                                                    RouteParams = routeParams
+                                                })" />
+                                    </th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="label label-primary">Added</span>
-                                    </td>
-                                    <td class="issue-info">
-                                        <a href="#">
-                                            ISSUE-23
-                                        </a>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag tag 1</span></p>
-                                            <p class="m-0" style="font-size:medium;"><span class="badge">tag 1</span></p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        Adrian Novak
-                                    </td>
-                                    <td>
-                                        12.02.2025 10:00 am
-                                    </td>
-                                    <td>
-                                        20
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-white btn-xs">View</button>
-                                        <button class="btn btn-white btn-xs">Edit</button>
-                                    </td>
-                                </tr>
+                                @if (Model.Events.Items.Count == 0) {
+                                    <tr>
+                                        <td colspan="8" class="text-center font-bold font-lg">No Records</td>
+                                    </tr>
+                                }
+
+                                @foreach (var item in Model.Events.Items) 
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="label label-primary">Added</span>
+                                        </td>
+                                        <td class="issue-info">
+                                            <a asp-controller="Events" asp-action="Details" asp-route-name="@item.Name.Replace(' ','-')" asp-route-id="@item.Id.ToString()">
+                                                @item.Name
+                                            </a>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach (var tag in item.Tags) {
+                                                    <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @item.Price.ToString("c")
+                                        </td>
+                                        <td>
+                                            @item.Category
+                                        </td>
+                                        <td>
+                                            @item.DateTime.ToString("ddd, dd MMM, yyyy, hh:mm tt")
+                                        </td>
+                                        <td>
+                                            500
+                                        </td>
+                                        <td>
+                                            146
+                                        </td>
+                                        <td class="text-end">
+                                            <a class="btn btn-white btn-xs" role="button"
+                                                asp-controller="Events" asp-action="Details" asp-route-name="@item.Name.Replace(' ','-')" asp-route-id="@item.Id.ToString()">
+                                                View
+                                            </a>
+                                            <button class="btn btn-white btn-xs">Edit</button>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
 
@@ -397,10 +246,13 @@
                         var paginationModel = new PaginationVM
                         {
                             Controller = "Events",
-                            Action = "Index",
-                            CurrentPage = 3,
-                            TotalPages = 15,
-                            RouteParams = new Dictionary<string, string?>()
+                            Action = "DashboardList",
+                            CurrentPage = Model.Events.PageIndex,
+                            TotalPages = Model.Events.TotalPages,
+                            RouteParams = new Dictionary<string,string?> {
+                                { "sort", Model.Filter.Sort },
+                                { "dir", Model.Filter.SortDir }
+                            }.Union(routeParams).ToDictionary()
                         };
                     }
                     <partial name="_PaginationButtons" model="paginationModel" />
@@ -435,7 +287,26 @@
                 popupPosition: 'center',
                 hideValueTooltipOnSelectAll: true,
                 maxWidth: '100%'
+            }),
+            $("#rangeDatepicker").datepicker({
+                keyboardNavigation: !1,
+                forceParse: !1,
+                autoclose: !0,
+                format: "mm/dd/yyyy"
             });
+
+            $('#table-size-select').on('change', function () {
+                var selectedSize = $(this).val();
+                $('#form-search #table-size-input').val(selectedSize);
+                $('#filter-form #table-size-input').val(selectedSize);
+                var searchValue = $('#search-input').val().trim();
+                if (searchValue) {
+                    $('#form-search').submit();
+                } else {
+                    $('#filter-form').submit();
+                }
+            });
+
         });
     </script>
 }
