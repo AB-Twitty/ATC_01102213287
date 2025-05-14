@@ -67,7 +67,8 @@ namespace Evenda.App.Services.Auth
                 AccessToken = accessToken,
                 AccessTokenExpirationDate = tokenExpiration,
                 RefreshToken = refreshToken,
-                RefreshTokenExpirationDate = expireAt
+                RefreshTokenExpirationDate = expireAt,
+                Roles = user.Roles.Select(r => r.SystemName).ToList()
             };
 
             return authDto;

@@ -1,13 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Evenda.UI.Models.AuthVM;
 
 namespace Evenda.UI.Dtos.Auth
 {
     public class LoginDto
     {
-        [Required]
-        [EmailAddress]
         public string Email { get; set; }
-        [Required]
         public string Password { get; set; }
+
+        public LoginDto(LoginVM loginVM)
+        {
+            Email = loginVM.Email;
+            Password = loginVM.Password;
+        }
     }
 }

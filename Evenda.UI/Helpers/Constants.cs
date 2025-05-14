@@ -1,10 +1,10 @@
-﻿namespace Evenda.App.Utils.Constants
+﻿namespace Evenda.UI.Helpers
 {
     public static class Constants
     {
         public const string CUSTOMER_ROLE_NAME = "role_CUSTOMER";
         public const string ADMIN_ROLE_NAME = "role_ADMIN";
 
-        public const int REFRESH_TOKEN_EXPIRATION_TIME_IN_DAYES = 7;
+        public const string DEFAULT_AUTHENTICATION_SCHEME = "EvendaCookieAuth";
     }
 }

@@ -3,7 +3,9 @@ using Evenda.UI.Contracts.IApiClients.ITag;
 using Evenda.UI.Contracts.IHelper;
 using Evenda.UI.Dtos;
 using Evenda.UI.Dtos.Event;
+using Evenda.UI.Helpers;
 using Evenda.UI.Models.EventVM;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -83,6 +85,7 @@ namespace Evenda.UI.Controllers
         }
 
         #region Create Event
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         [HttpGet("dashboard/events/new")]
         public async Task<IActionResult> Create()
         {

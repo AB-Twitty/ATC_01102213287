@@ -1,4 +1,5 @@
 ﻿using Evenda.UI.Extensions;
+using Evenda.UI.Helpers;
 using System.Security.Claims;
 
 namespace Evenda.UI.Middlewares
@@ -27,7 +28,7 @@ namespace Evenda.UI.Middlewares
 
                 claims.AddRange(authSession.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-                var identity = new ClaimsIdentity(claims, "Session");
+                var identity = new ClaimsIdentity(claims, Constants.DEFAULT_AUTHENTICATION_SCHEME);
                 var principal = new ClaimsPrincipal(identity);
 
                 context.User = principal;

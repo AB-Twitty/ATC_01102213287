@@ -27,6 +27,7 @@ app.UseSession();
 
 app.UseMiddleware<UserPrincipalMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

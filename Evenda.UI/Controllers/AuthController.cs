@@ -2,8 +2,12 @@
 using Evenda.UI.Contracts.IServices;
 using Evenda.UI.Dtos.Auth;
 using Evenda.UI.Extensions;
+using Evenda.UI.Helpers;
+using Evenda.UI.Models.AuthVM;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Evenda.UI.Controllers
 {
@@ -31,38 +35,64 @@ namespace Evenda.UI.Controllers
 
         #region Login
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login([FromQuery] string returnUrl = "")
         {
-            return View();
+            return View(new LoginVM { ReturnUrl = returnUrl });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginVM loginVM)
         {
             if (!ModelState.IsValid)
             {
-                return View(loginDto);
+                return View(loginVM);
             }
 
             try
             {
-                var authDto = await _authApiClient.SendLoginReq(loginDto);
+                var authDto = await _authApiClient.SendLoginReq(new LoginDto(loginVM));
                 HttpContext.Session.SetUserSession(authDto);
+
+                if (loginVM.RememberMe)
+                {
+                    var claims = new List<Claim>
+                    {
+                        new(ClaimTypes.NameIdentifier, authDto.Id.ToString()),
+                        new(ClaimTypes.Name, authDto.FirstName),
+                        new(ClaimTypes.Email, authDto.Email)
+                    };
+
+                    claims.AddRange(authDto.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+                    var identity = new ClaimsIdentity(claims, Constants.DEFAULT_AUTHENTICATION_SCHEME);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = loginVM.RememberMe,
+                        ExpiresUtc = loginVM.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddMinutes(30)
+                    };
+
+                    await HttpContext.SignInAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME, new ClaimsPrincipal(identity), authProperties);
+
+                }
 
                 _apiTokenService.SetTokens(authDto.AccessToken, authDto.RefreshToken);
             }
             catch (ValidationException vex)
             {
                 ModelState.AddApiValidationErrors(vex.Value);
-                return View(loginDto);
+                return View(loginVM);
             }
             catch (UnauthorizedAccessException uaex)
             {
                 ModelState.AddModelError(string.Empty, uaex.Message);
-                return View(loginDto);
+                return View(loginVM);
             }
 
-            return RedirectToAction("Index", "Home");
+
+            return !string.IsNullOrEmpty(loginVM.ReturnUrl)
+               ? Redirect(loginVM.ReturnUrl)
+               : RedirectToAction("Index", "Home");
         }
         #endregion
 
@@ -88,7 +118,7 @@ namespace Evenda.UI.Controllers
                 return View(registerDto);
             }
 
-            return RedirectToAction("Login", new LoginDto { Email = registerDto.Email });
+            return RedirectToAction("Login", new LoginVM { Email = registerDto.Email });
         }
         #endregion
 
@@ -97,6 +127,8 @@ namespace Evenda.UI.Controllers
         public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME);
+
             return RedirectToAction("Index", "Home");
         }
         #endregion

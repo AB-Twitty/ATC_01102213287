@@ -17,6 +17,16 @@ namespace Evenda.UI.Extensions
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddAuthentication(Constants.DEFAULT_AUTHENTICATION_SCHEME)
+            .AddCookie(Constants.DEFAULT_AUTHENTICATION_SCHEME, options =>
+            {
+                options.LoginPath = "/auth/login";
+                options.LogoutPath = "/auth/logout";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.SlidingExpiration = true;
+                options.Cookie.HttpOnly = true;
+            });
+
             var apiBaseUrl = configuration["ApiSettings:BaseUrl"];
             ApiEndPoints.URI = apiBaseUrl;
 

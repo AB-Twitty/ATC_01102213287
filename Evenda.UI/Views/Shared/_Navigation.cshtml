@@ -1,4 +1,5 @@
-﻿<div class="row border-bottom">
+﻿@using System.Security.Claims
+<div class="row border-bottom">
     <nav class="navbar navbar-top" role="navigation">
         <div class="navbar-header">
 
@@ -39,14 +40,16 @@
                 }
             </li>
 
-            <li>
-                <a asp-controller="Home" asp-action="Dashboard"
-                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")"
-                   style="font-size: large;">
-                    Dashboard
-                </a>
+            @if (User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == Constants.ADMIN_ROLE_NAME)) {
+                <li>
+                    <a asp-controller="Home" asp-action="Dashboard"
+                       class="navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")"
+                       style="font-size: large;">
+                        Dashboard
+                    </a>
 
-            </li>
+                </li>
+            }
 
             <li>
                 <a asp-controller="Home" asp-action="Index"

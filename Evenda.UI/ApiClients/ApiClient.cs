@@ -47,6 +47,10 @@ namespace Evenda.UI.ApiClients
         protected async Task<DataResponse<TData>> GetAsync<TData>(string url)
         {
             var response = await _httpClient.GetAsync(url);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                throw new UnauthorizedAccessException("Unauthorized access");
+
             var content = await response.Content.ReadAsStringAsync();
             var baseResponse = JsonSerializer.Deserialize<DataResponse<TData>>(content, new JsonSerializerOptions
             {
@@ -62,6 +66,10 @@ namespace Evenda.UI.ApiClients
         {
             var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(url, content);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                throw new UnauthorizedAccessException("Unauthorized access");
+
             var responseContent = await response.Content.ReadAsStringAsync();
             var baseResponse = JsonSerializer.Deserialize<DataResponse<TData>>(responseContent, new JsonSerializerOptions
             {
