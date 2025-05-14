@@ -11,9 +11,11 @@
                 </a>
 
                 <div class="d-none d-md-flex">
-                    <form role="search" class="navbar-form-custom" action="search_results.html">
+                    <form id="top-search-form" asp-controller="Events" asp-action="Index" class="navbar-form-custom" method="get">
                         <div class="form-group">
-                            <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
+                            <input value="@ViewBag.TopSearch" name="search" type="text" placeholder="Search for something..." class="form-control" id="top-search">
+                            <input hidden name="dir" value="desc" />
+                            <button type="submit" class="btn btn-primary ms-2" style="display:none;"></button>
                         </div>
                     </form>
                 </div>
@@ -61,7 +63,7 @@
             </li>
 
             <li>
-                <a asp-controller="Events" asp-action="Index"
+                <a asp-controller="Events" asp-action="Index" asp-route-dir="desc"
                    class="navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active" : "")"
                    style="font-size: large;">
                     Events
@@ -152,3 +154,14 @@
         </div>
     </nav>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('top-search').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('top-search-form').submit();
+            }
+        });
+    </script>
+}

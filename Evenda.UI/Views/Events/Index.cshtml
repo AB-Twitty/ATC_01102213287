@@ -1,9 +1,28 @@
-﻿@model EventCardsListVM
+﻿@using Evenda.UI.Contracts.IHelper
+@model EventsListVM
+
+@inject IDropdownHelper _dropdownHelper
 
 @{
     ViewBag.NavActive = "Events";
+    ViewBag.TopSearch = Model.Filter.Search;
 
     ViewData["Title"] = "Events";
+
+    var tagSelect = await _dropdownHelper.GetTagSelectItems(OnlyInUse: true);
+    var categorySelect = (await _dropdownHelper.GetCatgorySelectItems())
+        .Prepend(new SelectListItem { Text = "All", Value = "all" });
+
+    var routeParams = new Dictionary<string, string?>
+    {
+        { "sort", Model.Filter.Sort },
+        { "dir", Model.Filter.SortDir },
+        { "search", Model.Filter.Search },
+        { "category", Model.Filter.Category },
+        { "tags", Model.Filter.Tags },
+        { "from", Model.Filter.FromDate?.ToString() },
+        { "to", Model.Filter.ToDate?.ToString() }
+    };
 }
 
 
@@ -17,7 +36,11 @@
                             <h5>Filter</h5>
                         </div>
                         <div class="ibox-content flex-grow-1 p-0">
-                            <form asp-controller="Events" asp-action="Index" method="Get">
+                            <form id="filter-form" asp-controller="Events" asp-action="Index" method="Get">
+                                <input hidden asp-for="Filter.Sort" name="sort" />
+                                <input hidden asp-for="Filter.SortDir" name="dir" />
+                                <input hidden asp-for="Filter.Search" name="search" />
+
                                 <div class="ibox m-0">
                                     <div class="ibox-title p-2 pr-lg-5">
                                         <h5>Category</h5>
@@ -29,11 +52,10 @@
                                     </div>
                                     <div class="ibox-content ibox-open-border">
                                         <select asp-for="Filter.Category" name="category" class="form-select">
-                                            <option selected value="">Select Category...</option>
-                                            <option>option 1</option>
-                                            <option>option 2</option>
-                                            <option>option 3</option>
-                                            <option>option 4</option>
+                                            @foreach (var category in categorySelect)
+                                            {
+                                                <option value="@category.Value" selected="@category.Selected">@category.Text</option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
@@ -50,9 +72,10 @@
                                     <div class="ibox-content ibox-open-border">
                                         <select asp-for="Filter.Tags" name="tags" placeholder="Select Tags..."
                                             multiple class="multiple-select">
-                                            @foreach(var option in Model.TagsSelectItems) 
+                                            @foreach (var tag in tagSelect)
                                             {
-                                                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                                                bool selected = Model.Filter?.TagIds.Contains(Guid.Parse(tag.Value)) ?? false;
+                                                <option value="@tag.Value" selected="@selected">@tag.Text</option>
                                             }
                                         </select>
                                     </div>
@@ -71,13 +94,13 @@
                                         <div class="input-daterange" id="rangeDatepicker">
                                             <div class="input-group mb-2">
                                                 <div class="input-group-text">From</div>
-                                                <input asp-for="Filter.FromDate" type="text" placeholder="XX/XX/XXXX" class="form-control" name="from">
+                                                <input asp-for="Filter.FromDate" type="text" placeholder="mm/dd/yyyy" class="form-control" name="from">
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-text" style="padding-right: 1.3rem;padding-left: 1.3rem;">
                                                     To
                                                 </div>
-                                                <input asp-for="Filter.ToDate" type="text" placeholder="XX/XX/XXXX" class="form-control" name="to">
+                                                <input asp-for="Filter.ToDate" type="text" placeholder="mm/dd/yyyy" class="form-control" name="to">
                                             </div>
                                         </div>
                                     </div>
@@ -98,6 +121,10 @@
                     <div class="ibox d-flex flex-column" style="height:100%;">
                         <div class="ibox-title ibox-heading">
                             <h5>Events</h5>
+                            <div class="ibox-tools" style="top:8px;">
+                                <select asp-items="Model.SortingSelectItems" id="sort-select" class="form-select">
+                                </select>
+                            </div>
                         </div>
                         <div class="ibox-content d-flex flex-column flex-grow-1">
                             @if (Model.Events.Items.Count == 0) {
@@ -108,6 +135,13 @@
                             }
                             else 
                             {
+                                <div class="row">
+                                    <p>
+                                        @((Model.Events.PageIndex - 1) * Model.Events.PageSize + 1)–@(Math.Min(Model.Events.PageIndex * Model.Events.PageSize, Model.Events.FilterCount)) 
+                                        of @Model.Events.FilterCount results
+                                    </p>
+                                </div>
+
                                 <div class="row">
                                     @foreach(var eventDto in Model.Events.Items) 
                                     {
@@ -180,13 +214,7 @@
                                     Action = "Index",
                                     CurrentPage = Model.Events.PageIndex,
                                     TotalPages = Model.Events.TotalPages,
-                                    RouteParams = new Dictionary<string, string?>
-                                    {
-                                    { "category", Model.Filter?.Category },
-                                    { "tags", Model.Filter?.Tags },
-                                    { "from", Model.Filter?.FromDate?.ToString("yyyy-MM-dd") },
-                                    { "to", Model.Filter?.ToDate?.ToString("yyyy-MM-dd") }
-                                    }
+                                    RouteParams = routeParams
                                 };
                             }
                             <partial name="_PaginationButtons" model="paginationModel" />
@@ -208,7 +236,8 @@
             $("#rangeDatepicker").datepicker({
                 keyboardNavigation: !1,
                 forceParse: !1,
-                autoclose: !0
+                autoclose: !0,
+                format: "mm/dd/yyyy"
             });
 
             VirtualSelect.init({
@@ -229,6 +258,16 @@
                 hideValueTooltipOnSelectAll: true,
                 maxWidth: '100%'
             });
+
+            $('#sort-select').on('change', function() {
+                var val = $(this).val().split('|');
+                $('input[name="sort"]').val(val[0]);
+                $('input[name="dir"]').val(val[1]);
+                $('#filter-form').submit();
+            });
+            var currentSort = $('input[name="sort"]').val();
+            var currentDir = $('input[name="dir"]').val();
+            $('#sort-select').val(currentSort + "|" + currentDir);
         });
     </script>
 }

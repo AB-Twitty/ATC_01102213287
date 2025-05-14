@@ -28,9 +28,9 @@ namespace Evenda.UI.ApiClients.Event
             return response.Data;
         }
 
-        public async Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto)
+        public async Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto, bool includeThumbnailImg)
         {
-            var formattedUrl = string.Format(ApiEndPoints.GET_FILTERED_EVENTS_PAGINATED, pagination.Page, pagination.PageSize, pagination.Sort, pagination.SortDir);
+            var formattedUrl = string.Format(ApiEndPoints.GET_FILTERED_EVENTS_PAGINATED, pagination.Page, pagination.PageSize, pagination.Sort, pagination.SortDir, includeThumbnailImg);
             var response = await PostAsync<PagedList<EventDto>, EventFilterDto>(formattedUrl, filterDto);
             return response.Data;
         }

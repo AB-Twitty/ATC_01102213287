@@ -26,7 +26,8 @@ namespace Evenda.API.Controllers
         #region Actions
 
         [HttpGet("paginated")]
-        public async Task<IActionResult> GetEventsPaginated([FromQuery] PaginationModel pagination, [FromBody] EventFilterDto filterDto)
+        public async Task<IActionResult> GetEventsPaginated([FromQuery] PaginationModel pagination,
+            [FromBody] EventFilterDto filterDto)
         {
             var response = await _eventService.GetEventsPaginated(pagination.Page, pagination.PageSize);
             return HandleResponse(response);
@@ -34,9 +35,9 @@ namespace Evenda.API.Controllers
 
         [HttpPost("filter/paginated")]
         public async Task<IActionResult> GetFilteredEventsPaginated([FromQuery] PaginationModel pagination,
-            [FromBody] EventFilterDto filterDto)
+            [FromBody] EventFilterDto filterDto, [FromQuery(Name = "include-thumbnail")] bool includeThumbnailImg = false)
         {
-            var response = await _eventService.GetFilteredEventsPaginated(pagination, filterDto);
+            var response = await _eventService.GetFilteredEventsPaginated(pagination, filterDto, includeThumbnailImg);
             return HandleResponse(response);
         }
 

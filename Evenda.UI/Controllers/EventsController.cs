@@ -32,56 +32,51 @@ namespace Evenda.UI.Controllers
 
         #endregion
 
+        #region Utils
+
+        protected virtual async Task<EventsListVM> CreateEventListViewModel(
+            EventFilterVM filterVM,
+            int pg = 1,
+            int sz = 12,
+            bool includeThumbnail = false)
+        {
+            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedFilteredEvents(new PaginationDto
+            {
+                Page = pg,
+                PageSize = sz,
+                Sort = filterVM.Sort,
+                SortDir = filterVM.SortDir
+            }, new EventFilterDto(filterVM), true));
+
+            return new EventsListVM { Filter = filterVM, Events = events };
+        }
+
+        #endregion
+
         #region Actions
 
+        #region Event List
         [HttpGet("events")]
-        public async Task<IActionResult> Index([FromQuery] int pg = 1, [FromQuery] EventFilterDto? filterDto = null)
+        public async Task<IActionResult> Index([FromQuery] EventFilterVM filterVM, [FromQuery] int pg = 1)
         {
-            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedEventsReq(pg, 12));
-
-            var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
-
-            var model = new EventCardsListVM
-            {
-                Events = events,
-                TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
-                    .Select(t => new SelectListItem
-                    {
-                        Text = t.Name,
-                        Value = t.Id.ToString(),
-                        Selected = filterDto?.TagIds.Contains(t.Id) ?? false
-                    }),
-                Filter = filterDto
-            };
-
+            var model = await CreateEventListViewModel(filterVM, pg, 12, true);
             return View(model);
         }
+
+        [HttpGet("dashboard/events")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
+        public async Task<IActionResult> DashboardList([FromQuery] EventFilterVM filterVM, [FromQuery] int pg = 1)
+        {
+            var model = await CreateEventListViewModel(filterVM, pg, filterVM.TableSize, true);
+            return View(model);
+        }
+        #endregion
 
         [HttpGet("event/{name}/{id}")]
         public async Task<IActionResult> Details(string name, Guid id)
         {
             var data = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
             return View(data);
-        }
-
-        [HttpGet("dashboard/events")]
-        public async Task<IActionResult> DashboardList([FromQuery] EventFilterVM filterVM, [FromQuery] int pg = 1)
-        {
-            var events = await ExecuteApiCall(() => _eventApiClient.SendGetPaginatedFilteredEvents(new PaginationDto
-            {
-                Page = pg,
-                PageSize = filterVM.TableSize,
-                Sort = filterVM.Sort,
-                SortDir = filterVM.SortDir
-            }, new EventFilterDto(filterVM)));
-
-            var model = new DashboardEventListVM
-            {
-                Filter = filterVM,
-                Events = events
-            };
-
-            return View(model);
         }
 
         #region Create Event

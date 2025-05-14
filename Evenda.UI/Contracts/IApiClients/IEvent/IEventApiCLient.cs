@@ -7,7 +7,7 @@ namespace Evenda.UI.Contracts.IApiClients.IEvent
     public interface IEventApiCLient
     {
         Task<PagedList<EventDto>> SendGetPaginatedEventsReq(int page, int pageSize);
-        Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto);
+        Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto, bool includeThumbnailImg);
         Task<EventDetailsDto> SendGetEventDetailsReq(Guid eventId);
         Task<Guid> SendCreateEventReq(CreateEventDto createEventDto);
     }
