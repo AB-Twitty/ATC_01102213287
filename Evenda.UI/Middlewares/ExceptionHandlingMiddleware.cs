@@ -1,4 +1,5 @@
-﻿using Evenda.UI.Models;
+﻿using Evenda.UI.Exceptions;
+using Evenda.UI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -58,10 +59,13 @@ namespace Evenda.UI.Middlewares
 
                 switch (ex)
                 {
+                    case ApiException apiEx:
+                        status = apiEx.ApiResponse.StatusCode;
+                        break;
                     case UnauthorizedAccessException:
                         status = HttpStatusCode.Unauthorized;
                         break;
-                    case FileNotFoundException or DirectoryNotFoundException or KeyNotFoundException or InvalidOperationException:
+                    case FileNotFoundException or DirectoryNotFoundException or KeyNotFoundException:
                         status = HttpStatusCode.NotFound;
                         break;
                     case BadHttpRequestException or InvalidOperationException or ArgumentNullException:
