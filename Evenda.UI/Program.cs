@@ -18,6 +18,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 

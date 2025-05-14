@@ -1,3 +1,4 @@
+using Evenda.App.Middlewares;
 using Evenda.App.Registrar;
 using Evenda.Infrastructure.Registrar;
 using Evenda.Persistence.Registrar;
@@ -37,6 +38,8 @@ builder.Services.AddInfrastructureLayer(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseCors("CorsPolicy");
 
 // Configure the HTTP request pipeline.
@@ -48,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
