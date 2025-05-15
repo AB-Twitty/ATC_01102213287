@@ -1,4 +1,5 @@
 ﻿using Evenda.UI.Contracts.IServices;
+using Evenda.UI.Helpers;
 using System.Net;
 using System.Net.Http.Headers;
 
@@ -17,7 +18,8 @@ namespace Evenda.UI.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var accessToken = _httpContextAccessor.HttpContext?.Session.GetString("access-token");
+            var accessToken = _httpContextAccessor.HttpContext?.User?.Claims
+                    .FirstOrDefault(c => c.Type == Constants.ACCESS_TOKEN_KEY)?.Value;
 
             if (!string.IsNullOrEmpty(accessToken))
             {
@@ -28,12 +30,10 @@ namespace Evenda.UI.Handlers
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                var refreshed = await _apiTokenService.TryRefreshToken();
+                (bool refreshed, string newAccessToken) = await _apiTokenService.TryRefreshToken();
 
                 if (refreshed)
                 {
-                    var newAccessToken = _httpContextAccessor.HttpContext?.Session.GetString("access-token");
-
                     if (!string.IsNullOrEmpty(newAccessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newAccessToken);

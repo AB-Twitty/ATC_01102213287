@@ -21,5 +21,11 @@ namespace Evenda.UI.ApiClients.Auth
         {
             var response = await PostAsync(ApiEndPoints.REGISTER, registerDto);
         }
+
+        public async Task<AuthDto> SendRefreshTokenReq(RefreshTokenDto refreshTokenDto)
+        {
+            var response = await PostAsync<AuthDto, RefreshTokenDto>(ApiEndPoints.REFRESH_TOKEN, refreshTokenDto);
+            return response.Data;
+        }
     }
 }

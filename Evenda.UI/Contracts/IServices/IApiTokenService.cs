@@ -2,7 +2,6 @@
 {
     public interface IApiTokenService
     {
-        Task<bool> TryRefreshToken();
-        void SetTokens(string accessToken, string refreshToken);
+        Task<(bool, string)> TryRefreshToken();
     }
 }

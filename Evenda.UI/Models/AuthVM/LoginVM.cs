@@ -10,6 +10,7 @@ namespace Evenda.UI.Models.AuthVM
         [Required]
         public string Password { get; set; }
         public bool RememberMe { get; set; } = false;
-        public string ReturnUrl { get; set; } = string.Empty;
+
+        public string? ReturnUrl { get; set; } = string.Empty;
     }
 }

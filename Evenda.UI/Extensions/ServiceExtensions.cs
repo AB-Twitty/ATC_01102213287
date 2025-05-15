@@ -2,9 +2,11 @@
 using Evenda.UI.ApiClients.Auth;
 using Evenda.UI.ApiClients.Event;
 using Evenda.UI.ApiClients.Tag;
+using Evenda.UI.ApiClients.Ticket;
 using Evenda.UI.Contracts.IApiClients.IAuth;
 using Evenda.UI.Contracts.IApiClients.IEvent;
 using Evenda.UI.Contracts.IApiClients.ITag;
+using Evenda.UI.Contracts.IApiClients.ITicket;
 using Evenda.UI.Contracts.IHelper;
 using Evenda.UI.Contracts.IServices;
 using Evenda.UI.Handlers;
@@ -31,7 +33,6 @@ namespace Evenda.UI.Extensions
             ApiEndPoints.URI = apiBaseUrl;
 
             services.AddHttpContextAccessor();
-            services.AddSession();
 
             services.AddHttpClient<IApiTokenService, ApiTokenService>();
             services.AddTransient<AuthTokenHandler>();
@@ -43,6 +44,7 @@ namespace Evenda.UI.Extensions
             services.AddScoped<IAuthApiClient, AuthApiClient>();
             services.AddScoped<IEventApiCLient, EventApiClient>();
             services.AddScoped<ITagApiClient, TagApiClient>();
+            services.AddScoped<ITicketApiClient, TicketApiClient>();
 
             services.AddScoped<IDropdownHelper, DropdownHelper>();
 

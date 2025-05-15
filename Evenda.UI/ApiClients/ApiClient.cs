@@ -1,5 +1,5 @@
-﻿using Evenda.UI.Models.Response;
-using System.ComponentModel.DataAnnotations;
+﻿using Evenda.UI.Exceptions;
+using Evenda.UI.Models.Response;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -29,15 +29,7 @@ namespace Evenda.UI.ApiClients
         {
             if (response.Success) return;
 
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.UnprocessableEntity:
-                    throw new ValidationException("Validation error occurred", null, response.Errors);
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    throw new UnauthorizedAccessException(response.Message);
-                    break;
-            }
+            throw new ApiException(response);
         }
 
         #endregion

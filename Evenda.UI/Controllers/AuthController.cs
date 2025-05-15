@@ -2,7 +2,6 @@
 using Evenda.UI.Contracts.IServices;
 using Evenda.UI.Dtos.Auth;
 using Evenda.UI.Exceptions;
-using Evenda.UI.Extensions;
 using Evenda.UI.Helpers;
 using Evenda.UI.Models.AuthVM;
 using Microsoft.AspNetCore.Authentication;
@@ -36,7 +35,7 @@ namespace Evenda.UI.Controllers
 
         #region Login
         [HttpGet("login")]
-        public IActionResult Login([FromQuery] string returnUrl = "")
+        public IActionResult Login([FromQuery] string returnUrl = " ")
         {
             return View(new LoginVM { ReturnUrl = returnUrl });
         }
@@ -45,10 +44,7 @@ namespace Evenda.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVM loginVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(loginVM);
-            }
+            if (!ModelState.IsValid) return View(loginVM);
 
             AuthDto authDto;
 
@@ -59,6 +55,8 @@ namespace Evenda.UI.Controllers
                     throwOnStatusCodes: [HttpStatusCode.Unauthorized]
                 );
 
+                if (!ModelState.IsValid) return View(loginVM);
+
             }
             catch (ApiException ex)
             {
@@ -66,32 +64,25 @@ namespace Evenda.UI.Controllers
                 return View(loginVM);
             }
 
-            HttpContext.Session.SetUserSession(authDto);
-
-            if (loginVM.RememberMe)
-            {
-                var claims = new List<Claim>
+            var claims = new List<Claim>
                     {
                         new(ClaimTypes.NameIdentifier, authDto.Id.ToString()),
                         new(ClaimTypes.Name, authDto.FirstName),
-                        new(ClaimTypes.Email, authDto.Email)
+                        new(ClaimTypes.Email, authDto.Email),
+                        new(Constants.ACCESS_TOKEN_KEY, authDto.AccessToken),
+                        new(Constants.REFRESH_TOKEN_KEY, authDto.RefreshToken)
                     };
 
-                claims.AddRange(authDto.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            claims.AddRange(authDto.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-                var identity = new ClaimsIdentity(claims, Constants.DEFAULT_AUTHENTICATION_SCHEME);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = loginVM.RememberMe,
-                    ExpiresUtc = loginVM.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddMinutes(30)
-                };
+            var identity = new ClaimsIdentity(claims, Constants.DEFAULT_AUTHENTICATION_SCHEME);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = loginVM.RememberMe,
+                ExpiresUtc = loginVM.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddMinutes(30)
+            };
 
-                await HttpContext.SignInAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME, new ClaimsPrincipal(identity), authProperties);
-
-            }
-
-            _apiTokenService.SetTokens(authDto.AccessToken, authDto.RefreshToken);
-
+            await HttpContext.SignInAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME, new ClaimsPrincipal(identity), authProperties);
 
             return !string.IsNullOrEmpty(loginVM.ReturnUrl)
                ? Redirect(loginVM.ReturnUrl)
@@ -129,9 +120,7 @@ namespace Evenda.UI.Controllers
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
             await HttpContext.SignOutAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME);
-
             return RedirectToAction("Index", "Home");
         }
         #endregion

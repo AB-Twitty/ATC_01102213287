@@ -1,5 +1,4 @@
 using Evenda.UI.Extensions;
-using Evenda.UI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,10 +23,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
-
-app.UseSession();
-
-app.UseMiddleware<UserPrincipalMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
