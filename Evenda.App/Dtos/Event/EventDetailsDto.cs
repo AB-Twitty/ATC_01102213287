@@ -16,6 +16,11 @@ namespace Evenda.App.Dtos.Event
         public string Category { get; set; }
         public DateTime DateTime { get; set; }
 
+        public int TicketsQuantity { get; set; }
+        public int BookedTickets { get; set; }
+        public int AvailableTickets => TicketsQuantity - BookedTickets;
+        public bool? IsBooked { get; set; }
+
         public IList<FileUploadDto> Images { get; set; }
 
         public EventDetailsDto()
@@ -34,6 +39,8 @@ namespace Evenda.App.Dtos.Event
             Price = @event.Price;
             Category = @event.Category;
             DateTime = @event.DateTime;
+
+            TicketsQuantity = @event.TicketsQuantity;
 
             Images = @event.Images?.OrderByDescending(i => i.IsThumbnail)
                 .Select(img => new FileUploadDto(img)).ToList() ?? new List<FileUploadDto>();

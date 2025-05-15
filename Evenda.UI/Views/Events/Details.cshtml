@@ -5,8 +5,10 @@
 
     string bookingMsg = TempData["BookingMsg"]?.ToString() ?? "";
 
-    bool isBookingSucceed = false;
-    bool.TryParse(TempData["success"]?.ToString(), out isBookingSucceed);
+    bool isBooked = Model.IsBooked ?? false;
+    bool.TryParse(TempData["success"]?.ToString(), out bool success);
+
+	isBooked = success ? true : isBooked;
 }
 
 <link href="~/lib/carousel/bootstrap-carousel.min.css" rel="stylesheet" />
@@ -15,7 +17,7 @@
 <div class="wrapper wrapper-content animated fadeInRight mt-15 pb-0">
 	@if (!string.IsNullOrEmpty(bookingMsg))
 	{
-		<div class="alert @(isBookingSucceed ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+		<div class="alert @(isBooked ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
 			<strong>@bookingMsg</strong>
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>
@@ -89,9 +91,12 @@
 									<input type="hidden" name="EventId" value="@Model.Id" />
 									<input type="hidden" name="eventName" value="@Model.Name" />
 
-                                    @if (isBookingSucceed)
+                                    @if (isBooked)
                                     {
                                         <button type="button" disabled class="btn btn-primary float-end">Booked<i class="fa-solid fa-check m-1"></i></button>
+                                    }
+                                    else if (Model.AvailableTickets<=0) {
+										<button type="button" disabled class="btn btn-warning float-end">Sold Out<i class="fa-solid fa-xmark m-1"></i></button>
                                     }
                                     else {
                                         <button type="submit" class="btn btn-primary float-end">Book Now<i class="fa-solid fa-plus m-1"></i></button>

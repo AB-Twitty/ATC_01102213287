@@ -19,6 +19,10 @@ namespace Evenda.App.Dtos.Event
 
         public IList<string> Tags { get; set; }
 
+        public int TicketsQuantity { get; set; } = 0;
+        public int BookedTickets { get; set; } = 0;
+        public int AvailableTickets => TicketsQuantity - BookedTickets;
+        public bool? IsBooked { get; set; }
 
         public EventDto() { }
 
@@ -33,6 +37,8 @@ namespace Evenda.App.Dtos.Event
             Price = @event.Price;
             Category = @event.Category;
             DateTime = @event.DateTime;
+
+            TicketsQuantity = @event.TicketsQuantity;
 
             Tags = @event?.Tags?.Select(x => x.Name).ToList() ?? new List<string>();
         }

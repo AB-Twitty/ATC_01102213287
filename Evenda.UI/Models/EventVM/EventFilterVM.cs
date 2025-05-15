@@ -1,12 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Evenda.UI.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 public class EventFilterVM
 {
-    private string _sort = "date_time";
+    private string _sort = SortColumns.DateTime;
     private string _sortDir = "asc";
     private int _tableSize = 25;
 
-    private static readonly string[] ValidSortColumns = { "date_time", "name", "price", "#tickets", "#booked" };
+    private static readonly string[] ValidSortColumns =
+        [
+            SortColumns.DateTime,
+            SortColumns.Name,
+            SortColumns.Price,
+            SortColumns.Tickets,
+            SortColumns.Booked
+        ];
     private static readonly string[] ValidSortDirections = { "asc", "desc" };
     private static readonly int[] ValidTableSizes = { 10, 25, 50, 75, 100 };
 
@@ -16,7 +24,7 @@ public class EventFilterVM
     public string Sort
     {
         get => _sort;
-        set => _sort = ValidSortColumns.Contains(value?.ToLower()) ? value.ToLower() : "date_time";
+        set => _sort = ValidSortColumns.Contains(value?.ToLower()) ? value.ToLower() : SortColumns.DateTime;
     }
 
     [FromQuery(Name = "dir")]

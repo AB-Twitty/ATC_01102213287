@@ -94,7 +94,8 @@
                                         <div class="input-daterange" id="rangeDatepicker">
                                             <div class="input-group mb-2">
                                                 <div class="input-group-text">From</div>
-                                                <input asp-for="Filter.FromDate" type="text" placeholder="mm/dd/yyyy" class="form-control" name="from">
+                                                <input asp-for="Filter.FromDate" type="text" value="@DateTime.Now.ToString("MM/dd/yyyy")"
+                                                    placeholder="mm/dd/yyyy" class="form-control" name="from">
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-text" style="padding-right: 1.3rem;padding-left: 1.3rem;">
@@ -190,15 +191,33 @@
 
                                                     @{
                                                         var formattedName = string.Join("-", eventDto.Name.Split(" "));
-                                                        <div class="d-flex mt-auto">
-                                                            <a style="width:100%;"
-                                                               class="btn btn-primary btn-custom"
-                                                               asp-controller="Events"
-                                                               asp-action="Details"
-                                                               asp-route-id="@eventDto.Id.ToString()"
-                                                               asp-route-name="@formattedName">Book Now<i class="fa-solid fa-plus m-1"></i></a>
-                                                        </div>
+
+                                                        var btnClass =
+                                                            (eventDto.IsBooked ?? false) ? "btn-info"
+                                                            : (eventDto.AvailableTickets <= 0) ? "btn-warning"
+                                                            : "btn-primary btn-hover";
                                                     }
+                                                    <div class="d-flex mt-auto">
+                                                        <a style="width:100%;"
+                                                           class="btn @btnClass btn-custom"
+                                                           asp-controller="Events"
+                                                           asp-action="Details"
+                                                           asp-route-id="@eventDto.Id.ToString()"
+                                                           asp-route-name="@formattedName">
+                                                            @if (eventDto.IsBooked ?? false) //btn-info
+                                                            {
+                                                                @:Booked <i class="fa-solid fa-check m-1"></i>
+                                                            }
+															else if (eventDto.AvailableTickets <= 0) //btn-warning
+															{
+																@:Sold Out <i class="fa-solid fa-xmark m-1"></i>
+															}
+                                                            else //btn-primary btn-custom
+                                                            {
+                                                                @:Book Now <i class="fa-solid fa-plus m-1"></i>
+                                                            }
+                                                        </a>
+                                                    </div>
 
                                                 </div>
                                             </div>

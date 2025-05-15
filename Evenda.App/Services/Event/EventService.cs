@@ -1,4 +1,5 @@
-﻿using Evenda.App.Contracts.IPersistence.IRepositories;
+﻿using Evenda.App.Contracts;
+using Evenda.App.Contracts.IPersistence.IRepositories;
 using Evenda.App.Contracts.IPersistence.IUnitOfWork;
 using Evenda.App.Contracts.IServices.IEvent;
 using Evenda.App.Contracts.IServices.IMedia;
@@ -9,6 +10,7 @@ using Evenda.App.Dtos.Media;
 using Evenda.App.Models;
 using Evenda.App.Utils;
 using Evenda.Domain.Entities.MediaEntities;
+using Evenda.Domain.Entities.TicketEntities;
 using Evenda.Services.Services.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -25,21 +27,25 @@ namespace Evenda.App.Services.Event
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBaseRepository<EventEntity> _eventRepo;
         private readonly IBaseRepository<Image> _imageRepo;
+        private readonly IBaseRepository<Ticket> _ticketRepo;
         private readonly ITagService _tagService;
         private readonly IImageService _imageService;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
         #region Ctor
 
-        public EventService(IUnitOfWork unitOfWork, ITagService tagService, IImageService imageService, IValidatorDispatcher validatorDispatcher)
+        public EventService(IUnitOfWork unitOfWork, ITagService tagService, IImageService imageService, IValidatorDispatcher validatorDispatcher, IWorkContext workContext)
         {
             _unitOfWork = unitOfWork;
             _eventRepo = _unitOfWork.GetRepository<EventEntity>();
             _imageRepo = _unitOfWork.GetRepository<Image>();
+            _ticketRepo = _unitOfWork.GetRepository<Ticket>();
             _tagService = tagService;
             _imageService = imageService;
             _validatorDispatcher = validatorDispatcher;
+            _workContext = workContext;
         }
 
         #endregion
@@ -48,7 +54,7 @@ namespace Evenda.App.Services.Event
 
         protected virtual Expression<Func<EventEntity, object>> GenerateSortingExpression(string? sort)
         {
-            var allowedSorts = new[] { "date_time", "name", "price", "#tickets", "#booked" };
+            var allowedSorts = new[] { "date_time", "name", "price", "tickets_cnt", "booked_cnt" };
 
             if (string.IsNullOrWhiteSpace(sort) || !allowedSorts.Contains(sort))
             {
@@ -60,8 +66,8 @@ namespace Evenda.App.Services.Event
                 "date_time" => x => x.DateTime,
                 "name" => x => x.Name,
                 "price" => x => x.Price,
-                "#tickets" => x => x.TicketsQuantity,
-                "#booked" => x => x.TicketsQuantity,
+                "tickets_cnt" => x => x.TicketsQuantity,
+                "booked_cnt" => x => x.Tickets.Count(t => !t.IsDeleted),
                 _ => x => x.DateTime
             };
         }
@@ -77,7 +83,7 @@ namespace Evenda.App.Services.Event
                 pageNumber: page,
                 pageSize: pageSize,
                 mapFunc: e => new EventDto(e),
-                include: x => x.Include(x => x.Tags),
+                include: x => x.Include(x => x.Tags).Include(x => x.Tickets),
                 orderBy: x => x.DateTime,
                 orderByDescending: false
             );
@@ -115,15 +121,22 @@ namespace Evenda.App.Services.Event
                 orderByDescending: pagination.IsOrderDesc()
             );
 
-            if (includeThumbnailImg)
+            foreach (var eventDto in pagedList.Items)
             {
-                foreach (var eventDto in pagedList.Items)
-                {
-                    var img = await _imageService.GetEventThumbnailImg(eventDto.Id);
+                eventDto.BookedTickets = await _ticketRepo.CountAsync(x => x.EventId == eventDto.Id && !x.IsDeleted);
 
-                    if (img != null)
-                        eventDto.Image = new FileUploadDto(img);
-                }
+                var userId = _workContext.GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId)) continue;
+
+                eventDto.IsBooked = await _ticketRepo
+                    .Exists(x => x.EventId == eventDto.Id && x.UserId.ToString() == userId && !x.IsDeleted);
+
+                if (!includeThumbnailImg) continue;
+
+                var img = await _imageService.GetEventThumbnailImg(eventDto.Id);
+
+                if (img != null)
+                    eventDto.Image = new FileUploadDto(img);
             }
 
             return Success(pagedList);
@@ -139,7 +152,18 @@ namespace Evenda.App.Services.Event
             if (@event == null)
                 return NotFound<EventDetailsDto>();
 
-            return Success(new EventDetailsDto(@event));
+            var eventDto = new EventDetailsDto(@event);
+
+            eventDto.BookedTickets = await _ticketRepo.CountAsync(x => x.EventId == eventDto.Id && !x.IsDeleted);
+
+            var userId = _workContext.GetCurrentUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                eventDto.IsBooked = await _ticketRepo
+                .Exists(x => x.EventId == eventDto.Id && x.UserId.ToString() == userId && !x.IsDeleted);
+            }
+
+            return Success(eventDto);
         }
 
         public async Task<DataResponse<Guid>> CreateEvent(CreateEventDto createDto)

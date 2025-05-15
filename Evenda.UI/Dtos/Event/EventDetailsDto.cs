@@ -14,6 +14,11 @@ namespace Evenda.UI.Dtos.Event
         public string Category { get; set; }
         public DateTime DateTime { get; set; }
 
+        public int TicketsQuantity { get; set; }
+        public int BookedTickets { get; set; }
+        public int AvailableTickets => TicketsQuantity - BookedTickets;
+        public bool? IsBooked { get; set; }
+
         public IList<FileUploadDto> Images { get; set; }
     }
 }
