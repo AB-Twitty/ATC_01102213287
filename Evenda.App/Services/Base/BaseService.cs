@@ -126,5 +126,14 @@ namespace Evenda.Services.Services.Base
                 Message = message
             };
         }
+
+        protected virtual DataResponse<TData> BadRequest<TData>(string message = "Bad Request")
+        {
+            return new DataResponse<TData>
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = message
+            };
+        }
     }
 }

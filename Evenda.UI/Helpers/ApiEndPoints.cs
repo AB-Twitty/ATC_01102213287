@@ -26,5 +26,7 @@
         public const string CREATE_EVENT = "Events/new";
 
         public const string GET_TAGS = "Tags?in-use={0}";
+
+        public const string BOOK_EVENT = "Tickets/book";
     }
 }

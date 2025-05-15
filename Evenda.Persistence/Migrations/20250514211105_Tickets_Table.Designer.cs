@@ -4,6 +4,7 @@ using Evenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Evenda.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514211105_Tickets_Table")]
+    partial class Tickets_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,15 +227,9 @@ namespace Evenda.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("tickets", (string)null);
                 });
@@ -446,20 +443,11 @@ namespace Evenda.Persistence.Migrations
                     b.HasOne("Evenda.Domain.Entities.EventEntities.Event", "Event")
                         .WithMany("Tickets")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_tickets_event");
 
-                    b.HasOne("Evenda.Domain.Entities.UserEntities.User", "User")
-                        .WithMany("Tickets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("fk_tickets_user");
-
                     b.Navigation("Event");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Evenda.Domain.Entities.UserEntities.UserSession", b =>
@@ -512,8 +500,6 @@ namespace Evenda.Persistence.Migrations
 
             modelBuilder.Entity("Evenda.Domain.Entities.UserEntities.User", b =>
                 {
-                    b.Navigation("Tickets");
-
                     b.Navigation("UserSessions");
                 });
 #pragma warning restore 612, 618

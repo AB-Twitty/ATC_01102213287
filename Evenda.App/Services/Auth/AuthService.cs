@@ -40,25 +40,28 @@ namespace Evenda.App.Services.Auth
             _workContext = workContext;
         }
 
-        #endregion
-
-        #region Utils
-
-        protected async Task<AuthDto> RefreshUserSession(User user)
+        protected async Task<AuthDto> RefreshUserSession(User user, UserSession? lastActiveSession = null)
         {
             var (accessToken, tokenExpiration) = await _tokenProvider.GenerateAccessToken(user);
-            var refreshToken = _tokenProvider.GenerateRefreshToken();
-            var expireAt = DateTime.UtcNow.AddDays(Constants.REFRESH_TOKEN_EXPIRATION_TIME_IN_DAYES);
+            var refreshToken = lastActiveSession?.ExpireAt > DateTime.UtcNow ? lastActiveSession.Token : _tokenProvider.GenerateRefreshToken();
 
-            user.UserSessions.Add(new UserSession
+            if (lastActiveSession != null && lastActiveSession.ExpireAt <= DateTime.UtcNow)
             {
-                Token = refreshToken,
-                ExpireAt = expireAt,
-            });
+                _userSessionsRepo.Delete(lastActiveSession);
+            }
 
-            await _unitOfWork.SaveChangesAsync();
+            if (lastActiveSession == null || lastActiveSession.ExpireAt <= DateTime.UtcNow)
+            {
+                var newSession = new UserSession
+                {
+                    Token = refreshToken,
+                    ExpireAt = DateTime.UtcNow.AddDays(Constants.REFRESH_TOKEN_EXPIRATION_TIME_IN_DAYES),
+                };
+                user.UserSessions.Add(newSession);
+                await _unitOfWork.SaveChangesAsync();
+            }
 
-            var authDto = new AuthDto
+            return new AuthDto
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -67,11 +70,9 @@ namespace Evenda.App.Services.Auth
                 AccessToken = accessToken,
                 AccessTokenExpirationDate = tokenExpiration,
                 RefreshToken = refreshToken,
-                RefreshTokenExpirationDate = expireAt,
+                RefreshTokenExpirationDate = DateTime.UtcNow.AddDays(Constants.REFRESH_TOKEN_EXPIRATION_TIME_IN_DAYES),
                 Roles = user.Roles.Select(r => r.SystemName).ToList()
             };
-
-            return authDto;
         }
 
         #endregion
@@ -112,9 +113,7 @@ namespace Evenda.App.Services.Auth
             if (activeSession == null)
                 return Unauthorized<AuthDto>();
 
-            _userSessionsRepo.Delete(activeSession);
-
-            var authDto = await RefreshUserSession(user);
+            var authDto = await RefreshUserSession(user, activeSession);
 
             return Success(authDto);
         }

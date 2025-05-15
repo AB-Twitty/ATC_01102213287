@@ -3,6 +3,7 @@ using Evenda.App.Contracts.IServices.IAuth;
 using Evenda.App.Contracts.IServices.IEvent;
 using Evenda.App.Contracts.IServices.IMedia;
 using Evenda.App.Contracts.IServices.ITag;
+using Evenda.App.Contracts.IServices.ITickets;
 using Evenda.App.Contracts.IValidators;
 using Evenda.App.Dtos.Auth;
 using Evenda.App.Dtos.Event;
@@ -10,6 +11,7 @@ using Evenda.App.Services.Auth;
 using Evenda.App.Services.Event;
 using Evenda.App.Services.Media;
 using Evenda.App.Services.Tag;
+using Evenda.App.Services.Tickets;
 using Evenda.App.Validators;
 using Evenda.App.Validators.AuthValidators;
 using Evenda.App.Validators.EventValidators;
@@ -39,6 +41,7 @@ namespace Evenda.App.Registrar
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<ITagService, TagService>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ITicketService, TicketService>();
 
             #endregion
 

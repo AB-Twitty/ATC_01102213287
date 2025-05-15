@@ -1,4 +1,5 @@
 ﻿using Evenda.Domain.Base;
+using Evenda.Domain.Entities.TicketEntities;
 
 namespace Evenda.Domain.Entities.UserEntities
 {
@@ -11,5 +12,7 @@ namespace Evenda.Domain.Entities.UserEntities
 
         public virtual ICollection<Role> Roles { get; set; } = new HashSet<Role>();
         public virtual ICollection<UserSession> UserSessions { get; set; } = new HashSet<UserSession>();
+
+        public virtual ICollection<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
     }
 }
