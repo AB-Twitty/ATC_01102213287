@@ -1,0 +1,166 @@
+﻿@using System.Globalization
+@model PagedList<BookingDto>
+
+@{
+	ViewData["Title"] = "My Bookings";
+	ViewBag.NavActive = "Bookings";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5><i class="fa fa-list me-1"></i>My Bookings</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="mb-3">
+                        <strong>
+                            Displaying @((Model.PageIndex - 1) * Model.PageSize + 1)–@(Math.Min(Model.PageIndex * Model.PageSize, Model.FilterCount))
+                            of @Model.FilterCount results.
+                        </strong>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover issue-tracker">
+                            <thead class="ff-secondary">
+                                <tr>
+                                    <th>#</th>
+                                    <th>
+                                        Event
+                                    </th>
+                                    <th>
+                                        Price
+                                    </th>
+                                    <th>Category</th>
+                                    <th>
+										Event Date
+                                    </th>
+                                    <th>
+                                        Booked At
+                                    </th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (Model.Items.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center font-bold font-lg">No Bookings</td>
+                                    </tr>
+                                }
+
+                                @foreach(var booking in Model.Items) 
+                                {
+                                    <tr>
+                                        <td>
+                                            @{
+												var bookingStatus = booking.BookingStatus.ToLower();
+												var statusClass = bookingStatus switch
+												{
+													"upcoming" => "label-warning",
+													"completed" => "label-success",
+													"cancelled" => "label-danger",
+													_ => "label-default"
+												};
+                                            }
+                                            <span class="label @statusClass">@booking.BookingStatus</span>
+                                        </td>
+                                        <td class="issue-info" style="width:25%;">
+                                            <a asp-controller="Events" asp-action="Details" asp-route-name="@booking.EventName.Replace(' ',',')", asp-route-id="@booking.EventId">
+                                                @booking.EventName
+                                            </a>
+                                        </td>
+                                        <td>
+											@booking.Price.ToString("C", CultureInfo.CurrentCulture)
+                                        </td>
+                                        <td>
+                                            @booking.Category
+                                        </td>
+                                        <td>
+											@booking.EventDate.ToString("ddd, dd MMM, yyyy, hh:mm tt", CultureInfo.InvariantCulture)
+                                        </td>
+                                        <td>
+											@booking.TicketBookedAt.ToString("ddd, dd MMM, yyyy, hh:mm tt", CultureInfo.InvariantCulture)
+                                        </td>
+										@if (booking.BookingStatus.ToLower() == "upcoming")
+										{
+											<td class="text-end">
+												<button class="btn btn-danger btn-xs"
+                                                        onclick="showCancelModal('@Url.Action("Cancel", "Tickets", new { id = booking.TicketId })')">
+                                                    Cancel
+                                                </button>
+											</td>
+										}
+                                        else
+                                        {
+                                            <td class="text-end">
+                                                N/A
+                                            </td>
+                                        }
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+                    @{
+                        var paginationModel = new PaginationVM
+                        {
+                            Controller = "Tickets",
+                            Action = "Index",
+                            CurrentPage = Model.PageIndex,
+                            TotalPages = Model.TotalPages,
+                            RouteParams = new Dictionary<string,string?>()
+                        };
+                    }
+                    <partial name="_PaginationButtons" model="paginationModel" />
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelConfirmLabel">Confirm Cancellation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this booking?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let cancelUrl = '';
+        function showCancelModal(url) {
+            cancelUrl = url;
+            var modal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
+            modal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+                window.location.href = cancelUrl;
+            });
+        });
+    </script>
+}

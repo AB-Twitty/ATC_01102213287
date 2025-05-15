@@ -4,9 +4,10 @@ using Evenda.App.Contracts.IPersistence.IUnitOfWork;
 using Evenda.App.Contracts.IServices.ITickets;
 using Evenda.App.Dtos.Tickets;
 using Evenda.App.Models;
+using Evenda.App.Utils;
 using Evenda.Domain.Entities.TicketEntities;
 using Evenda.Services.Services.Base;
-
+using Microsoft.EntityFrameworkCore;
 using EventEntity = Evenda.Domain.Entities.EventEntities.Event;
 
 namespace Evenda.App.Services.Tickets
@@ -63,6 +64,25 @@ namespace Evenda.App.Services.Tickets
             await _unitOfWork.SaveChangesAsync();
 
             return Created(ticket.Id, "Ticket booked successfully.");
+        }
+
+        public async Task<DataResponse<PagedList<TicketDto>>> GetUserBookings(PaginationModel pagination)
+        {
+            var userId = _workContext.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized<PagedList<TicketDto>>();
+
+            var tickets = await _ticketRepo.FindPaginatedAsync(
+                predicate: x => true,
+                pageNumber: pagination.Page,
+                pageSize: pagination.PageSize,
+                mapFunc: x => new TicketDto(x),
+                include: x => x.Include(t => t.Event),
+                orderBy: x => x.DateCreated,
+                orderByDescending: true
+            );
+
+            return Success(tickets);
         }
 
         #endregion

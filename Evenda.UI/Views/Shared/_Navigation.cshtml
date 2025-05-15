@@ -45,7 +45,7 @@
             @if (User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == Constants.ADMIN_ROLE_NAME)) {
                 <li>
                     <a asp-controller="Home" asp-action="Dashboard"
-                       class="navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")"
+                       class="navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active-link" : "")"
                        style="font-size: large;">
                         Dashboard
                     </a>
@@ -55,7 +55,7 @@
 
             <li>
                 <a asp-controller="Home" asp-action="Index"
-                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active" : "")"
+                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active-link" : "")"
                    style="font-size: large;">
                     Home
                 </a>
@@ -64,13 +64,23 @@
 
             <li>
                 <a asp-controller="Events" asp-action="Index" asp-route-dir="desc"
-                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active" : "")"
+                   class="navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active-link" : "")"
                    style="font-size: large;">
                     Events
                 </a>
-
             </li>
 
+            @if (User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == Constants.CUSTOMER_ROLE_NAME)) 
+            {
+                <li>
+                    <a asp-controller="Tickets" asp-action="Index" asp-route-pg="1"
+                       class="navbar-top-item @(ViewBag.NavActive == "Bookings" ? "active-link" : "")"
+                       style="font-size: large;">
+                        <i class="fa-solid fa-book"></i>
+                    </a>
+                </li>
+            }
+            
             <li>
                 <a href="#" class="navbar-top-item position-relative" id="theme-toggle">
                     <i class="fa fa-moon stretched-link d-none" id="light-theme"></i>
@@ -107,22 +117,33 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <li>
                     <a asp-controller="Home" asp-action="Dashboard"
-                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active" : "")">
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Dashboard" ? "active-link" : "")">
                         Dashboard
                     </a>
                 </li>
                 <li>
                     <a asp-controller="Home" asp-action="Index"
-                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active" : "")">
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Home" ? "active-link" : "")">
                         Home
                     </a>
                 </li>
                 <li>
-                    <a asp-controller="Events" asp-action="Index"
-                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active" : "")">
+                    <a asp-controller="Events" asp-action="Index" asp-route-dir="desc"
+                       class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Events" ? "active-link" : "")">
                         Events
                     </a>
                 </li>
+                
+                @if (User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == Constants.CUSTOMER_ROLE_NAME))
+                {
+                    <li>
+                        <a asp-controller="Tickets" asp-action="Index" asp-route-pg="1"
+                           class="dropdown-item navbar-top-item navigation-link @(ViewBag.NavActive == "Bookings" ? "active-link" : "")">
+                            My Bookings
+                        </a>
+                    </li>
+                }
+
                 
                 <!--
                 <li>

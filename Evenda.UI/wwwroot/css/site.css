@@ -71,13 +71,13 @@
     color: #1ab394;
 }
 
-.navigation-link.active {
+.active-link {
     color: #1ab394 !important;
 }
 
 .navigation-link:hover::after,
 .navigation-link:focus::after,
-.navigation-link.active::after {
+.navigation-link.active-link::after {
     transform: scaleX(1);
 }
 

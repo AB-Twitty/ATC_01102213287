@@ -30,6 +30,14 @@ namespace Evenda.UI.ApiClients.Ticket
             return response.Data;
         }
 
+        public async Task<PagedList<BookingDto>> GetMyBookings(int page = 1, int pageSize = 15)
+        {
+            var response = await GetAsync<PagedList<BookingDto>>(
+                url: ApiEndPoints.GET_MY_BOOKINGS + $"?page={page}&pageSize={pageSize}"
+            );
+            return response.Data;
+        }
+
         #endregion
     }
 }
