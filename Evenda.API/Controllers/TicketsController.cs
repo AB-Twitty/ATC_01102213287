@@ -43,6 +43,14 @@ namespace Evenda.API.Controllers
             return HandleResponse(result);
         }
 
+        [HttpDelete("cancel-booking/{ticketId}")]
+        [Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
+        public async Task<IActionResult> CancelBooking(Guid ticketId)
+        {
+            var result = await _ticketService.CancelBooking(ticketId);
+            return HandleResponse(result);
+        }
+
         #endregion
     }
 }

@@ -40,7 +40,7 @@ namespace Evenda.UI.ApiClients
         {
             var response = await _httpClient.GetAsync(url);
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                 throw new UnauthorizedAccessException("Unauthorized access");
 
             var content = await response.Content.ReadAsStringAsync();
@@ -59,7 +59,7 @@ namespace Evenda.UI.ApiClients
             var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(url, content);
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                 throw new UnauthorizedAccessException("Unauthorized access");
 
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -81,6 +81,10 @@ namespace Evenda.UI.ApiClients
         {
             var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(url, content);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                throw new UnauthorizedAccessException("Unauthorized access");
+
             var responseContent = await response.Content.ReadAsStringAsync();
             var baseResponse = JsonSerializer.Deserialize<BaseResponse>(responseContent, new JsonSerializerOptions
             {
@@ -89,6 +93,18 @@ namespace Evenda.UI.ApiClients
 
             HandleResponse(baseResponse);
 
+            return baseResponse;
+        }
+
+        protected async Task<BaseResponse> DeleteAsync(string url)
+        {
+            var response = await _httpClient.DeleteAsync(url);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var baseResponse = JsonSerializer.Deserialize<BaseResponse>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? throw new JsonException("Failed to deserialize response");
+            HandleResponse(baseResponse);
             return baseResponse;
         }
 

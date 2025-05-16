@@ -73,7 +73,7 @@ namespace Evenda.App.Services.Tickets
                 return Unauthorized<PagedList<TicketDto>>();
 
             var tickets = await _ticketRepo.FindPaginatedAsync(
-                predicate: x => true,
+                predicate: x => x.UserId.ToString() == userId,
                 pageNumber: pagination.Page,
                 pageSize: pagination.PageSize,
                 mapFunc: x => new TicketDto(x),
@@ -85,6 +85,24 @@ namespace Evenda.App.Services.Tickets
             return Success(tickets);
         }
 
+        public async Task<BaseResponse> CancelBooking(Guid ticketId)
+        {
+            var userId = _workContext.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var ticket = await _ticketRepo.FirstOrDefaultAsync(t => t.Id == ticketId && t.UserId.ToString() == userId);
+            if (ticket is null)
+                return Unauthorized();
+
+            if (ticket.IsDeleted)
+                return BadRequest("This ticket is already cancelled.");
+
+            ticket.IsDeleted = true;
+            await _unitOfWork.SaveChangesAsync();
+
+            return Success("Ticket cancelled successfully.");
+        }
         #endregion
     }
 }

@@ -31,5 +31,6 @@
 
         public const string BOOK_EVENT = "Tickets/book";
         public const string GET_MY_BOOKINGS = "Tickets/my-bookings";
+        public const string CANCEL_BOOKING = "Tickets/cancel-booking/{0}";
     }
 }

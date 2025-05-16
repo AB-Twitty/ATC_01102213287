@@ -38,6 +38,11 @@ namespace Evenda.UI.ApiClients.Ticket
             return response.Data;
         }
 
+        public async Task SendCancelBookingReq(Guid ticketId)
+        {
+            var response = await DeleteAsync(string.Format(ApiEndPoints.CANCEL_BOOKING, ticketId.ToString()));
+        }
+
         #endregion
     }
 }

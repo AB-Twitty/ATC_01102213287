@@ -7,5 +7,6 @@ namespace Evenda.UI.Contracts.IApiClients.ITicket
     {
         Task<Guid> BookEventAsync(BookEventDto bookDto);
         Task<PagedList<BookingDto>> GetMyBookings(int page = 1, int pageSize = 15);
+        Task SendCancelBookingReq(Guid ticketId);
     }
 }

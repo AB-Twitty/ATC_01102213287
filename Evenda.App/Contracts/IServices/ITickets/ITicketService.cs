@@ -8,5 +8,6 @@ namespace Evenda.App.Contracts.IServices.ITickets
     {
         Task<DataResponse<Guid>> BookEvent(BookEventDto bookDto);
         Task<DataResponse<PagedList<TicketDto>>> GetUserBookings(PaginationModel pagination);
+        Task<BaseResponse> CancelBooking(Guid ticketId);
     }
 }

@@ -7,6 +7,7 @@ using System.Net;
 
 namespace Evenda.UI.Controllers
 {
+    [Route("Bookings")]
     public class TicketsController : DefaultController
     {
         #region Fields
@@ -56,6 +57,17 @@ namespace Evenda.UI.Controllers
             );
 
             return View(tickets);
+        }
+
+        [HttpPost("cancel-booking")]
+        [Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelBooking(Guid ticketId)
+        {
+            await ExecuteApiCall(() => _ticketApiClient.SendCancelBookingReq(ticketId));
+            TempData["success"] = true;
+
+            return RedirectToAction("Index");
         }
 
         #endregion
