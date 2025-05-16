@@ -1,4 +1,14 @@
-﻿<nav class="navbar-default" role="navigation">
+﻿@using System.Security.Claims
+
+@{
+    var firstName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? "";
+    var lastName = User.Claims.FirstOrDefault(c => c.Type == "lname")?.Value ?? "";
+    string FormatName(string name) =>
+        string.IsNullOrWhiteSpace(name) ? "" : char.ToUpper(name[0]) + name[1..].ToLower();
+    var fullName = $"{FormatName(firstName)} {FormatName(lastName)}".Trim();
+}
+
+<nav class="navbar-default" role="navigation">
     <div class="sidebar-collapse h-100" data-simplebar="">
         <div class="simplebar-wrapper" style="margin: 0px;">
             <div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask">
@@ -9,17 +19,19 @@
 
                             <div class="nav-header">
                                 <a href="index.html" class="brand-logo mt-2">
-                                    <img alt="brand-image" src="~/img/logo-white.png" class="sidebar-logo-white" style="max-width: -webkit-fill-available;">
-                                    <img alt="brand-image" src="~/img/logo-black.png" class="sidebar-logo-black" style="max-width: -webkit-fill-available;">
+                                    <img alt="brand-image" src="/img/logo-white.png" class="sidebar-logo-white" style="max-width: -webkit-fill-available;">
+                                    <img alt="brand-image" src="/img/logo-black.png" class="sidebar-logo-black" style="max-width: -webkit-fill-available;">
                                 </a>
 
                                 <div class="logo-element">
-                                    <img alt="image" src="~/img/logo-sm.png" height="50">
+                                    <img alt="image" src="/img/logo-sm.png" height="50">
                                 </div>
 
                                 <div class="dropdown profile-element">
                                     <img alt="image" class="rounded-circle" src="~/img/avatar.jpg" height="48">
-                                    <span style="color: #dfe4ed;" class="d-block mt-1 fw-semibold fs-14 ff-secondary">Damian D.</span>
+                                    <span style="color: #dfe4ed;" class="d-block mt-1 fw-semibold fs-14 ff-secondary">
+                                        @fullName
+                                    </span>
                                 </div>
                             </div>
 

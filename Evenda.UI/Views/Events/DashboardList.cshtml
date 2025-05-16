@@ -22,6 +22,8 @@
         { "from", Model.Filter.FromDate?.ToString() },
         { "to", Model.Filter.ToDate?.ToString() }
     };
+
+    bool.TryParse(TempData["success"]?.ToString(), out bool success);
 }
 
 @section Styles {
@@ -29,6 +31,15 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+
+    @if (success)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Event was cancelled successfully.</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="ibox-content mb-2 border-bottom">
         <form method="Get" asp-controller="Events" asp-action="DashboardList" id="filter-form">
             <input hidden asp-for="Filter.Sort" name="sort" />
@@ -224,6 +235,7 @@
                                             <a asp-controller="Events" asp-action="Details" asp-route-name="@item.Name.Replace(' ','-')" asp-route-id="@item.Id.ToString()">
                                                 @item.Name
                                             </a>
+                                            <p class="mb-1"><i class="fa-solid fa-location-dot me-1"></i>@item.Venue, @item.City, @item.Country</p>
                                             <div class="d-flex flex-wrap gap-1">
                                                 @foreach (var tag in item.Tags) {
                                                     <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
@@ -251,6 +263,16 @@
                                                 View
                                             </a>
                                             <button class="btn btn-white btn-xs">Edit</button>
+                                            @if (!item.IsDeleted && item.DateTime > DateTime.Now)
+                                            {
+                                                <form asp-action="CancelEvent" asp-controller="Events" method="post" style="display:inline;">
+                                                    <input hidden name="eventId" value="@item.Id" />
+                                                    <button type="button" class="btn btn-danger btn-xs"
+                                                            onclick="showCancelModal(this.form)">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -280,8 +302,27 @@
         </div>
     </div>
 
-
 </div>
+
+
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelConfirmLabel">Confirm Cancellation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this event?
+                <p class="text-danger" style="font-size:smaller;" >Cancelling an event will cancel all its bookings.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
 	<script src="~/lib/virtual-select/js/virtual-select.min.js"></script>
@@ -325,6 +366,18 @@
                 }
             });
 
+        });
+
+        let cancelForm = null;
+        function showCancelModal(form) {
+            cancelForm = form;
+            var modal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
+            modal.show();
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+                if (cancelForm) cancelForm.submit();
+            });
         });
     </script>
 }

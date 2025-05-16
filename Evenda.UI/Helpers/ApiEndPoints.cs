@@ -24,6 +24,7 @@
         public const string GET_FILTERED_EVENTS_PAGINATED = "Events/filter/paginated?page={0}&sz={1}&sort={2}&dir={3}&include-thumbnail={4}";
         public const string GET_EVENT_DETAILS = "Events/{0}";
         public const string CREATE_EVENT = "Events/new";
+        public const string CANCEL_EVENT = "Events/cancel/{0}";
 
         public const string GET_TAGS = "Tags?in-use={0}";
 

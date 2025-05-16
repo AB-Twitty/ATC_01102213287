@@ -10,6 +10,7 @@ namespace Evenda.UI.Contracts.IApiClients.IEvent
         Task<PagedList<EventDto>> SendGetPaginatedFilteredEvents(PaginationDto pagination, EventFilterDto filterDto, bool includeThumbnailImg);
         Task<EventDetailsDto> SendGetEventDetailsReq(Guid eventId);
         Task<Guid> SendCreateEventReq(CreateEventDto createEventDto);
+        Task SendCancelEventReq(Guid eventId);
         Task<IList<string>> GetCategories(bool inUseOnly = true);
     }
 }

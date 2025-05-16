@@ -68,6 +68,7 @@ namespace Evenda.UI.Controllers
                     {
                         new(ClaimTypes.NameIdentifier, authDto.Id.ToString()),
                         new(ClaimTypes.Name, authDto.FirstName),
+                        new("lname", authDto.LastName),
                         new(ClaimTypes.Email, authDto.Email),
                         new(Constants.ACCESS_TOKEN_KEY, authDto.AccessToken),
                         new(Constants.REFRESH_TOKEN_KEY, authDto.RefreshToken)

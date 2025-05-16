@@ -208,6 +208,33 @@ namespace Evenda.App.Services.Event
             return Created(@event.Id);
         }
 
+        public async Task<BaseResponse> CancelEvent(Guid EventId)
+        {
+            var @event = await _eventRepo.FirstOrDefaultAsync(
+                predicate: x => x.Id == EventId,
+                include: x => x.Include(e => e.Tickets)
+            );
+
+            if (@event == null)
+                return NotFound();
+
+            if (@event.IsDeleted)
+                return BadRequest("Event already deleted");
+
+            if (@event.DateTime <= DateTime.Now)
+                return BadRequest("Event already started or completed");
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            @event.IsDeleted = true;
+            foreach (var ticket in @event.Tickets)
+                ticket.IsDeleted = true;
+
+            await _unitOfWork.CommitAsync();
+
+            return Success("Event cancelled successfully");
+        }
+
         public async Task<DataResponse<IList<string>>> GetCategories(bool inUseOnly = true)
         {
             IList<string> categories = await _eventRepo.Table().Where(x => !inUseOnly || !x.IsDeleted)

@@ -47,6 +47,11 @@ namespace Evenda.UI.ApiClients.Event
             return response.Data;
         }
 
+        public async Task SendCancelEventReq(Guid eventId)
+        {
+            var response = await DeleteAsync(string.Format(ApiEndPoints.CANCEL_EVENT, eventId.ToString()));
+        }
+
         public async Task<IList<string>> GetCategories(bool inUseOnly = true)
         {
             var response = await GetAsync<IList<string>>(string.Format(ApiEndPoints.GET_CATEGORIES, inUseOnly));

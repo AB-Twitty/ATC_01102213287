@@ -130,6 +130,17 @@ namespace Evenda.UI.Controllers
         }
         #endregion
 
+        [HttpPost("cancel")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelEvent(Guid eventId)
+        {
+            await ExecuteApiCall(() => _eventApiClient.SendCancelEventReq(eventId));
+            TempData["success"] = true;
+
+            return RedirectToAction("DashboardList");
+        }
+
         #endregion
     }
 }

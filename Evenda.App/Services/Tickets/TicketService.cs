@@ -98,6 +98,9 @@ namespace Evenda.App.Services.Tickets
             if (ticket.IsDeleted)
                 return BadRequest("This ticket is already cancelled.");
 
+            if (ticket.Event.DateTime < DateTime.UtcNow)
+                return BadRequest("You cannot cancel a ticket for an event that has already started or completed.");
+
             ticket.IsDeleted = true;
             await _unitOfWork.SaveChangesAsync();
 

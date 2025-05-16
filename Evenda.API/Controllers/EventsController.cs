@@ -58,6 +58,14 @@ namespace Evenda.API.Controllers
             return HandleResponse(response);
         }
 
+        [HttpDelete("cancel/{eventId}")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
+        public async Task<IActionResult> CancelEvent([FromRoute] Guid eventId)
+        {
+            var response = await _eventService.CancelEvent(eventId);
+            return HandleResponse(response);
+        }
+
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories([FromQuery(Name = "in-use")] bool inUseOnly = true)
         {
