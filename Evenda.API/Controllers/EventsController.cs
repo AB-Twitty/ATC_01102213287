@@ -2,6 +2,8 @@
 using Evenda.App.Contracts.IServices.IEvent;
 using Evenda.App.Dtos.Event;
 using Evenda.App.Models;
+using Evenda.App.Utils.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Evenda.API.Controllers
@@ -49,9 +51,17 @@ namespace Evenda.API.Controllers
         }
 
         [HttpPost("new")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto createEventDto)
         {
             var response = await _eventService.CreateEvent(createEventDto);
+            return HandleResponse(response);
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories([FromQuery(Name = "in-use")] bool inUseOnly = true)
+        {
+            var response = await _eventService.GetCategories(inUseOnly);
             return HandleResponse(response);
         }
         #endregion

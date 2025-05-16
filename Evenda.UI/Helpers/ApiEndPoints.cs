@@ -27,6 +27,8 @@
 
         public const string GET_TAGS = "Tags?in-use={0}";
 
+        public const string GET_CATEGORIES = "Events/categories?in-use={0}";
+
         public const string BOOK_EVENT = "Tickets/book";
         public const string GET_MY_BOOKINGS = "Tickets/my-bookings";
     }

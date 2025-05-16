@@ -53,6 +53,12 @@ public class EventFilterVM
     [FromQuery(Name = "to")]
     public DateOnly? ToDate { get; set; }
 
+    [FromQuery(Name = "include-deleted")]
+    public bool IncludeDeleted { get; set; }
+
+    [FromQuery(Name = "upcoming-only")]
+    public bool UpcomingOnly { get; set; }
+
     public Guid[] TagIds => Tags?.Split(',')
         .Select(x => Guid.TryParse(x, out Guid parsedGuid) ? parsedGuid : (Guid?)null)
         .Where(x => x.HasValue)

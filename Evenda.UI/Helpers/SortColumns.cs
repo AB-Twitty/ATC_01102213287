@@ -7,5 +7,6 @@
         public const string Price = "price";
         public const string Tickets = "tickets_cnt";
         public const string Booked = "booked_cnt";
+        public const string Latest = "latest";
     }
 }

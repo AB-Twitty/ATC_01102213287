@@ -2,6 +2,9 @@
 {
     public class EventFilterDto
     {
+        public bool UpcomingOnly { get; set; } = true;
+        public bool GetDeletedEvents { get; set; } = false;
+
         public string? Search { get; set; }
         public string? Category { get; set; }
         public string? Tags { get; set; }
@@ -14,6 +17,11 @@
             .Select(x => x.GetValueOrDefault())
             .ToArray() ?? [];
 
+        public EventFilterDto()
+        {
+
+        }
+
         public EventFilterDto(EventFilterVM filterVM)
         {
             Category = filterVM.Category == "all" ? null : filterVM.Category;
@@ -22,6 +30,9 @@
             ToDate = filterVM.ToDate;
 
             Search = filterVM.Search;
+
+            UpcomingOnly = filterVM.UpcomingOnly;
+            GetDeletedEvents = filterVM.IncludeDeleted;
         }
     }
 }

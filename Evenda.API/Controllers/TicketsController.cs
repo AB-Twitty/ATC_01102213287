@@ -2,6 +2,7 @@
 using Evenda.App.Contracts.IServices.ITickets;
 using Evenda.App.Dtos.Tickets;
 using Evenda.App.Models;
+using Evenda.App.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,8 +28,7 @@ namespace Evenda.API.Controllers
         #region Actions
 
         [HttpPost("book")]
-        //[Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
-        [Authorize]
+        [Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
         public async Task<IActionResult> BookEvent([FromBody] BookEventDto BookDto)
         {
             var result = await _ticketService.BookEvent(BookDto);
@@ -36,8 +36,7 @@ namespace Evenda.API.Controllers
         }
 
         [HttpGet("my-bookings")]
-        //[Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
-        [Authorize]
+        [Authorize(Roles = Constants.CUSTOMER_ROLE_NAME)]
         public async Task<IActionResult> GetUserBookings([FromQuery] PaginationModel pagination)
         {
             var result = await _ticketService.GetUserBookings(pagination);

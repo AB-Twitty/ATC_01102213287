@@ -1,4 +1,6 @@
-﻿@{
+﻿@model HomeVM
+
+@{
 	ViewBag.NavActive = "Home";
 
     ViewData["Title"] = "Home Page";
@@ -9,7 +11,310 @@
     <img alt="image" class="img-fluid logo-white p-0" src="~/img/banner-white.png">
 </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if(Model.LatestEvents?.Any() ?? false) {
+    <div class="row mt-2">
+        <div class="text-center col-md-12">
+            <h1 class="display-6 font-bold text-primary mb-4">🔥 Latest Events Just Announced!</h1>
+
+        </div><div class="col-md-12">
+            <div class="ibox">
+                <div class="ibox-content pb-0">
+                    <div class="row">
+                        @foreach(var eventDto in Model.LatestEvents) 
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3" style="padding-bottom: 1.5rem;">
+                                <div class="ibox d-flex flex-column event-card" style="height:100%;">
+                                    <div class="ibox-title p-0" style="position: relative;min-height:185px;">
+
+                                        <div class="event-day-circle">
+                                            <small>@eventDto.DateTime.ToString("dd MMM")</small>
+                                        </div>
+                                        @if (eventDto.Image == null)
+                                        {
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="/img/default-event.png" alt="Event Image">
+                                        }
+                                        else
+                                        {
+                                            var imgBase64 = Convert.ToBase64String(eventDto.Image.FileStream);
+                                            var imgSrc = $"data:{eventDto.Image.ContentType};base64,{imgBase64}";
+
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="@imgSrc" alt="Event Image">
+                                        }
+                                    </div>
+
+                                    <div class="ibox-content d-flex flex-column flex-grow-1 ibox-heading">
+                                        @if (eventDto.Tags?.Any() ?? false)
+                                        {
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach (var tag in eventDto.Tags)
+                                                {
+                                                    <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
+                                                }
+                                            </div>
+                                            <hr />
+                                        }
+
+                                        <h3 class="align-items-center" style="font-weight:600;">
+                                            @eventDto.Name
+                                        </h3>
+
+                                        <p class="event-price">@eventDto.Price.ToString("c")</p>
+
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <span><i class="fa fa-calendar-check mr-2"></i>@eventDto.DateTime.ToString("ddd, dd MMM, yyyy")</span>
+                                            </div>
+                                            <div class="col-5 text-right">
+                                                <span><i class="fa fa-clock mr-2"></i>@eventDto.DateTime.ToString("hh:mm tt")</span>
+                                            </div>
+                                        </div>
+
+                                        @{
+                                            var formattedName = string.Join("-", eventDto.Name.Split(" "));
+
+                                            var btnClass =
+                                            (eventDto.IsBooked ?? false) ? "btn-info"
+                                            : (eventDto.AvailableTickets <= 0) ? "btn-warning"
+                                            : "btn-primary btn-hover";
+                                        }
+
+                                        <div class="d-flex mt-auto">
+                                            <a style="width:100%;"
+                                               class="btn @btnClass btn-custom"
+                                               asp-controller="Events"
+                                               asp-action="Details"
+                                               asp-route-id="@eventDto.Id.ToString()"
+                                               asp-route-name="@formattedName">
+                                                @if (eventDto.IsBooked ?? false) //btn-info
+                                                {
+                                                    @:Booked <i class="fa-solid fa-check m-1"></i>
+                                                }
+                                                else if (eventDto.AvailableTickets <= 0) //btn-warning
+                                                {
+                                                    @:Sold Out <i class="fa-solid fa-xmark m-1"></i>
+                                                }
+                                                else //btn-primary btn-custom
+                                                {
+                                                    @:Book Now <i class="fa-solid fa-plus m-1"></i>
+                                                }
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.UpcomingEvents?.Any() ?? false)
+{
+    <div class="row mt-2">
+        <div class="text-center col-md-12">
+            <h1 class="display-6 font-bold text-success mb-4">⏳ Don’t Miss These Upcoming Events!</h1>
+
+        </div><div class="col-md-12">
+            <div class="ibox">
+                <div class="ibox-content pb-0">
+                    <div class="row">
+                        @foreach (var eventDto in Model.UpcomingEvents)
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3" style="padding-bottom: 1.5rem;">
+                                <div class="ibox d-flex flex-column event-card" style="height:100%;">
+                                    <div class="ibox-title p-0" style="position: relative;min-height:185px;">
+
+                                        <div class="event-day-circle">
+                                            <small>@eventDto.DateTime.ToString("dd MMM")</small>
+                                        </div>
+                                        @if (eventDto.Image == null)
+                                        {
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="/img/default-event.png" alt="Event Image">
+                                        }
+                                        else
+                                        {
+                                            var imgBase64 = Convert.ToBase64String(eventDto.Image.FileStream);
+                                            var imgSrc = $"data:{eventDto.Image.ContentType};base64,{imgBase64}";
+
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="@imgSrc" alt="Event Image">
+                                        }
+                                    </div>
+
+                                    <div class="ibox-content d-flex flex-column flex-grow-1 ibox-heading">
+                                        @if (eventDto.Tags?.Any() ?? false)
+                                        {
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach (var tag in eventDto.Tags)
+                                                {
+                                                    <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
+                                                }
+                                            </div>
+                                            <hr />
+                                        }
+
+                                        <h3 class="align-items-center" style="font-weight:600;">
+                                            @eventDto.Name
+                                        </h3>
+
+                                        <p class="event-price">@eventDto.Price.ToString("c")</p>
+
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <span><i class="fa fa-calendar-check mr-2"></i>@eventDto.DateTime.ToString("ddd, dd MMM, yyyy")</span>
+                                            </div>
+                                            <div class="col-5 text-right">
+                                                <span><i class="fa fa-clock mr-2"></i>@eventDto.DateTime.ToString("hh:mm tt")</span>
+                                            </div>
+                                        </div>
+
+                                        @{
+                                            var formattedName = string.Join("-", eventDto.Name.Split(" "));
+
+                                            var btnClass =
+                                            (eventDto.IsBooked ?? false) ? "btn-info"
+                                            : (eventDto.AvailableTickets <= 0) ? "btn-warning"
+                                            : "btn-primary btn-hover";
+                                        }
+
+                                        <div class="d-flex mt-auto">
+                                            <a style="width:100%;"
+                                               class="btn @btnClass btn-custom"
+                                               asp-controller="Events"
+                                               asp-action="Details"
+                                               asp-route-id="@eventDto.Id.ToString()"
+                                               asp-route-name="@formattedName">
+                                                @if (eventDto.IsBooked ?? false) //btn-info
+                                                {
+                                                    @:Booked <i class="fa-solid fa-check m-1"></i>
+                                                }
+                                                else if (eventDto.AvailableTickets <= 0) //btn-warning
+                                                {
+                                                    @:Sold Out <i class="fa-solid fa-xmark m-1"></i>
+                                                }
+                                                else //btn-primary btn-custom
+                                                {
+                                                    @:Book Now <i class="fa-solid fa-plus m-1"></i>
+                                                }
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.MostBookedUpcomingEvents?.Any() ?? false)
+{
+    <div class="row mt-2">
+        <div class="text-center col-md-12">
+            <h1 class="display-6 font-bold text-warning mb-4">⭐ Most Popular Events – Booked by Many!</h1>
+
+        </div><div class="col-md-12">
+            <div class="ibox">
+                <div class="ibox-content pb-0">
+                    <div class="row">
+                        @foreach (var eventDto in Model.MostBookedUpcomingEvents)
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3" style="padding-bottom: 1.5rem;">
+                                <div class="ibox d-flex flex-column event-card" style="height:100%;">
+                                    <div class="ibox-title p-0" style="position: relative;min-height:185px;">
+
+                                        <div class="event-day-circle">
+                                            <small>@eventDto.DateTime.ToString("dd MMM")</small>
+                                        </div>
+                                        @if (eventDto.Image == null)
+                                        {
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="/img/default-event.png" alt="Event Image">
+                                        }
+                                        else
+                                        {
+                                            var imgBase64 = Convert.ToBase64String(eventDto.Image.FileStream);
+                                            var imgSrc = $"data:{eventDto.Image.ContentType};base64,{imgBase64}";
+
+                                            <img class="img-fluid mx-auto" style="min-width:100%;" src="@imgSrc" alt="Event Image">
+                                        }
+                                    </div>
+
+                                    <div class="ibox-content d-flex flex-column flex-grow-1 ibox-heading">
+                                        @if (eventDto.Tags?.Any() ?? false)
+                                        {
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach (var tag in eventDto.Tags)
+                                                {
+                                                    <p class="m-0" style="font-size:medium;"><span class="badge">@tag</span></p>
+                                                }
+                                            </div>
+                                            <hr />
+                                        }
+
+                                        <h3 class="align-items-center" style="font-weight:600;">
+                                            @eventDto.Name
+                                        </h3>
+
+                                        <p class="event-price">@eventDto.Price.ToString("c")</p>
+
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <span><i class="fa fa-calendar-check mr-2"></i>@eventDto.DateTime.ToString("ddd, dd MMM, yyyy")</span>
+                                            </div>
+                                            <div class="col-5 text-right">
+                                                <span><i class="fa fa-clock mr-2"></i>@eventDto.DateTime.ToString("hh:mm tt")</span>
+                                            </div>
+                                        </div>
+
+                                        @{
+                                            var formattedName = string.Join("-", eventDto.Name.Split(" "));
+
+                                            var btnClass =
+                                            (eventDto.IsBooked ?? false) ? "btn-info"
+                                            : (eventDto.AvailableTickets <= 0) ? "btn-warning"
+                                            : "btn-primary btn-hover";
+                                        }
+
+                                        <div class="d-flex mt-auto">
+                                            <a style="width:100%;"
+                                               class="btn @btnClass btn-custom"
+                                               asp-controller="Events"
+                                               asp-action="Details"
+                                               asp-route-id="@eventDto.Id.ToString()"
+                                               asp-route-name="@formattedName">
+                                                @if (eventDto.IsBooked ?? false) //btn-info
+                                                {
+                                                    @:Booked <i class="fa-solid fa-check m-1"></i>
+                                                }
+                                                else if (eventDto.AvailableTickets <= 0) //btn-warning
+                                                {
+                                                    @:Sold Out <i class="fa-solid fa-xmark m-1"></i>
+                                                }
+                                                else //btn-primary btn-custom
+                                                {
+                                                    @:Book Now <i class="fa-solid fa-plus m-1"></i>
+                                                }
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

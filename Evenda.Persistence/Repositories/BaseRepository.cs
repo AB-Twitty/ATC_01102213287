@@ -217,6 +217,8 @@ namespace Evenda.Persistence.Repositories
             return await query.CountAsync(predicate);
         }
 
+        public DbSet<TEntity> Table() => Entities;
+
         #endregion
     }
 }

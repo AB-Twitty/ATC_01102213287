@@ -34,12 +34,12 @@ namespace Evenda.Infrastructure.TokenProvider
         public async Task<(string, DateTime)> GenerateAccessToken(User user)
         {
             var userRoles = user.Roles;
-            var roles = userRoles.Select(x => x.Name);
+            var roles = userRoles.Select(x => x.SystemName);
 
             var roleClaims = new List<Claim>();
             foreach (var role in roles)
             {
-                roleClaims.Add(new Claim("roles", role));
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var claims = new[]

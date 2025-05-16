@@ -1,4 +1,5 @@
-﻿using Evenda.UI.Contracts.IApiClients.ITag;
+﻿using Evenda.UI.Contracts.IApiClients.IEvent;
+using Evenda.UI.Contracts.IApiClients.ITag;
 using Evenda.UI.Contracts.IHelper;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -9,14 +10,16 @@ namespace Evenda.UI.Helpers
         #region Fields
 
         private readonly ITagApiClient _tagApiClient;
+        private readonly IEventApiCLient _eventApiClient;
 
         #endregion
 
         #region Ctor
 
-        public DropdownHelper(ITagApiClient tagApiClient)
+        public DropdownHelper(ITagApiClient tagApiClient, IEventApiCLient eventApiClient)
         {
             _tagApiClient = tagApiClient;
+            _eventApiClient = eventApiClient;
         }
 
         #endregion
@@ -34,9 +37,9 @@ namespace Evenda.UI.Helpers
             });
         }
 
-        public async Task<IEnumerable<SelectListItem>> GetCatgorySelectItems()
+        public async Task<IEnumerable<SelectListItem>> GetCatgorySelectItems(bool OnlyInUse = true)
         {
-            var categories = new[] { "Tech", "Business", "Health", "Education", "Entertainment" };
+            var categories = await _eventApiClient.GetCategories(OnlyInUse);
             return categories.Select(c => new SelectListItem
             {
                 Text = c,

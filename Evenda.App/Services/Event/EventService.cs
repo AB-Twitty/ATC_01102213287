@@ -54,7 +54,7 @@ namespace Evenda.App.Services.Event
 
         protected virtual Expression<Func<EventEntity, object>> GenerateSortingExpression(string? sort)
         {
-            var allowedSorts = new[] { "date_time", "name", "price", "tickets_cnt", "booked_cnt" };
+            var allowedSorts = new[] { "date_time", "name", "price", "tickets_cnt", "booked_cnt", "latest" };
 
             if (string.IsNullOrWhiteSpace(sort) || !allowedSorts.Contains(sort))
             {
@@ -68,6 +68,7 @@ namespace Evenda.App.Services.Event
                 "price" => x => x.Price,
                 "tickets_cnt" => x => x.TicketsQuantity,
                 "booked_cnt" => x => x.Tickets.Count(t => !t.IsDeleted),
+                "latest" => x => x.DateCreated,
                 _ => x => x.DateTime
             };
         }
@@ -104,12 +105,13 @@ namespace Evenda.App.Services.Event
 
         public async Task<DataResponse<PagedList<EventDto>>> GetFilteredEventsPaginated(PaginationModel pagination, EventFilterDto filterDto, bool includeThumbnailImg = false)
         {
-            Expression<Func<EventEntity, bool>> filterPredicate = x => !x.IsDeleted
+            Expression<Func<EventEntity, bool>> filterPredicate = x => filterDto.GetDeletedEvents || !x.IsDeleted
                 && (string.IsNullOrEmpty(filterDto.Search) || x.Name.ToLower().Contains(filterDto.Search.ToLower()))
-                && (string.IsNullOrEmpty(filterDto.Category) || x.Name.ToLower() == filterDto.Category.ToLower())
+                && (string.IsNullOrEmpty(filterDto.Category) || x.Category.ToLower() == filterDto.Category.ToLower())
                 && (filterDto.TagIds.Count() == 0 || x.Tags.Any(t => filterDto.TagIds.Contains(t.Id)))
                 && (filterDto.FromDate == null || x.DateTime.Date >= filterDto.FromDate.Value.ToDateTime(TimeOnly.MinValue))
-                && (filterDto.ToDate == null || x.DateTime.Date <= filterDto.ToDate.Value.ToDateTime(TimeOnly.MinValue));
+                && (filterDto.ToDate == null || x.DateTime.Date <= filterDto.ToDate.Value.ToDateTime(TimeOnly.MinValue))
+                && (!filterDto.UpcomingOnly || x.DateTime.Date > DateTime.Now.Date);
 
             PagedList<EventDto> pagedList = await _eventRepo.FindPaginatedAsync(
                 predicate: filterPredicate,
@@ -204,6 +206,14 @@ namespace Evenda.App.Services.Event
             await _imageService.SaveEventImages(createDto.Images, @event.Id, createDto.ThumbnailIdx);
 
             return Created(@event.Id);
+        }
+
+        public async Task<DataResponse<IList<string>>> GetCategories(bool inUseOnly = true)
+        {
+            IList<string> categories = await _eventRepo.Table().Where(x => !inUseOnly || !x.IsDeleted)
+                .Select(x => x.Category).Distinct().ToListAsync();
+
+            return Success(categories);
         }
 
         #endregion

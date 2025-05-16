@@ -1,10 +1,12 @@
 ﻿using Evenda.App.Utils;
+using Evenda.Domain.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace Evenda.App.Contracts.IPersistence.IRepositories
 {
-    public interface IBaseRepository<TEntity>
+    public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
@@ -35,5 +37,7 @@ namespace Evenda.App.Contracts.IPersistence.IRepositories
             bool orderByDescending = false);
         Task<bool> Exists(Expression<Func<TEntity, bool>> predicate);
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+
+        DbSet<TEntity> Table();
     }
 }

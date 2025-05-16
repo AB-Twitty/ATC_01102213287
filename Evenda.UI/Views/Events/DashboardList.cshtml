@@ -15,6 +15,8 @@
     {
         { "sz", Model.Filter.TableSize.ToString() },
         { "search", Model.Filter.Search },
+        { "include-deleted", Model.Filter.IncludeDeleted.ToString() },
+        { "upcoming-only", Model.Filter.UpcomingOnly.ToString() },
         { "category", Model.Filter.Category },
         { "tags", Model.Filter.Tags },
         { "from", Model.Filter.FromDate?.ToString() },
@@ -34,16 +36,7 @@
             <input hidden asp-for="Filter.TableSize" name="sz" id="table-size-input" />
 
             <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label class="col-form-label" for="status">Status</label>
-                        <select id="status" multiple class="multiple-select" placeholder="Select Statuses...">
-                            <option value="1" selected>Upcoming</option>
-                            <option value="2" selected>Finished</option>
-                            <option value="3" selected>Canceled</option>
-                        </select>
-                    </div>
-                </div>
+                
                 <div class="col-sm-8">
                     <div class="form-group">
                         <label class="col-form-label" for="status">Tags</label>
@@ -66,9 +59,25 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label class="col-form-label">Include Cancelled Events</label>
+                        <div>
+                            <input asp-for="Filter.IncludeDeleted" name="include-deleted" type="checkbox" class="form-check-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label class="col-form-label" >Only Upcoming Events</label>
+                        <div>
+                            <input asp-for="Filter.UpcomingOnly" name="upcoming-only" type="checkbox" class="form-check-input">
+                        </div>
+                    </div>
+                </div>
                 <div class="col-sm-8">
                     <div class="form-group">
-                        <label class="col-form-label" for="status">Date</label>
+                        <label class="col-form-label">Date</label>
                         <div class="input-daterange input-group" id="rangeDatepicker">
                             <input asp-for="Filter.FromDate" type="text" class="form-control" name="from" placeholder="mm/dd/yyyy">
                             <span class="input-group-text">to</span>
@@ -200,7 +209,16 @@
                                 {
                                     <tr>
                                         <td>
-                                            <span class="label label-primary">Added</span>
+                                            @if (item.IsDeleted) {
+                                                <span class="label label-danger">Cancelled</span>
+                                            }
+                                            else if (item.DateTime <= DateTime.Now) {
+                                                <span class="label label-primary">Completed</span>
+                                            }
+                                            else {
+                                                <span class="label label-warning">Upcoming</span>
+                                            }
+                                            
                                         </td>
                                         <td class="issue-info">
                                             <a asp-controller="Events" asp-action="Details" asp-route-name="@item.Name.Replace(' ','-')" asp-route-id="@item.Id.ToString()">

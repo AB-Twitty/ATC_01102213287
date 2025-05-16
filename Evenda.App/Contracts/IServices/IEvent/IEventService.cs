@@ -10,5 +10,6 @@ namespace Evenda.App.Contracts.IServices.IEvent
         Task<DataResponse<PagedList<EventDto>>> GetFilteredEventsPaginated(PaginationModel pagination, EventFilterDto filterDto, bool includeThumbnailImg = false);
         Task<DataResponse<EventDetailsDto>> GetEventDetails(Guid eventId);
         Task<DataResponse<Guid>> CreateEvent(CreateEventDto createDto);
+        Task<DataResponse<IList<string>>> GetCategories(bool inUseOnly = true);
     }
 }

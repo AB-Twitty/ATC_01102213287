@@ -24,6 +24,8 @@ namespace Evenda.App.Dtos.Event
         public int AvailableTickets => TicketsQuantity - BookedTickets;
         public bool? IsBooked { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public EventDto() { }
 
         public EventDto(EventEntity @event)
@@ -37,6 +39,7 @@ namespace Evenda.App.Dtos.Event
             Price = @event.Price;
             Category = @event.Category;
             DateTime = @event.DateTime;
+            IsDeleted = @event.IsDeleted;
 
             TicketsQuantity = @event.TicketsQuantity;
 

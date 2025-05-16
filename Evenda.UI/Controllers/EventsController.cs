@@ -97,6 +97,7 @@ namespace Evenda.UI.Controllers
         }
 
         [HttpPost("dashboard/events/new")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateEventVM createVM)
         {
