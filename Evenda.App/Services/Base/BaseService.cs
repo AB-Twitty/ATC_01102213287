@@ -74,6 +74,15 @@ namespace Evenda.Services.Services.Base
             };
         }
 
+        protected virtual BaseResponse ValidationError(IDictionary<string, IList<string>> errors)
+        {
+            return new BaseResponse
+            {
+                StatusCode = HttpStatusCode.UnprocessableEntity,
+                Message = "One or more validation errors occurred.",
+                Errors = errors
+            };
+        }
 
 
 

@@ -18,6 +18,8 @@
         public const string REGISTER = "Auth/register";
         public const string LOGIN = "Auth/login";
         public const string REFRESH_TOKEN = "Auth/refresh-token";
+        public const string FORGOT_PASSWORD = "Auth/forgot-password";
+        public const string RESET_PASSWORD = "Auth/reset-password";
 
 
         public const string GET_PAGINATED_EVENTS = "Events/paginated?page={0}&sz={1}&sort={2}&dir={3}";

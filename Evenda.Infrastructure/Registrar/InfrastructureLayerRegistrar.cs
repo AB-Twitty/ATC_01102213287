@@ -1,6 +1,10 @@
-﻿using Evenda.App.Contracts.IInfrastructure.IHasher;
+﻿using Evenda.App.Contracts.IInfrastructure.IEmailSender;
+using Evenda.App.Contracts.IInfrastructure.IHasher;
+using Evenda.App.Contracts.IInfrastructure.IOtpService;
 using Evenda.App.Contracts.IInfrastructure.ITokenProvider;
+using Evenda.Infrastructure.EmailSender;
 using Evenda.Infrastructure.TokenProvider;
+using Evenda.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +15,12 @@ namespace Evenda.Infrastructure.Registrar
 {
     public static class InfrastructureLayerRegistrar
     {
-        public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration, string templateRootPath)
         {
+            services.AddSingleton(new RazorViewToStringRenderer(templateRootPath));
+
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
 
             services.AddAuthentication(options =>
             {
@@ -41,6 +48,11 @@ namespace Evenda.Infrastructure.Registrar
 
             services.AddScoped<IHasher, Hasher.Hasher>();
             services.AddScoped<ITokenProvider, JwtTokenProvider>();
+
+            services.AddMemoryCache();
+            services.AddScoped<IOtpService, OtpService.OtpService>();
+
+            services.AddScoped<IEmailSender, EmailSender.EmailSender>();
 
             return services;
         }

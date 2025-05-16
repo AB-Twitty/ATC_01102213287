@@ -29,11 +29,13 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var templateRoot = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "Templates");
+
 #region Configure Layers
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationLayer();
 builder.Services.AddPersistenceLayer(builder.Configuration);
-builder.Services.AddInfrastructureLayer(builder.Configuration);
+builder.Services.AddInfrastructureLayer(builder.Configuration, templateRoot);
 #endregion
 
 var app = builder.Build();

@@ -42,6 +42,18 @@ namespace Evenda.API.Controllers
             return HandleResponse(await _authService.RefreshUserTokens(refreshTokenDto));
         }
 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            return HandleResponse(await _authService.ForgotPassword(forgotPasswordDto));
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            return HandleResponse(await _authService.ResetPassword(resetPasswordDto));
+        }
+
         #endregion
     }
 }

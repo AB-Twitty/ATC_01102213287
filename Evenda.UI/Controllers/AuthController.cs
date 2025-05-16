@@ -1,7 +1,6 @@
 ﻿using Evenda.UI.Contracts.IApiClients.IAuth;
 using Evenda.UI.Contracts.IServices;
 using Evenda.UI.Dtos.Auth;
-using Evenda.UI.Exceptions;
 using Evenda.UI.Helpers;
 using Evenda.UI.Models.AuthVM;
 using Microsoft.AspNetCore.Authentication;
@@ -58,9 +57,9 @@ namespace Evenda.UI.Controllers
                 if (!ModelState.IsValid) return View(loginVM);
 
             }
-            catch (ApiException ex)
+            catch (UnauthorizedAccessException uaex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, "Invalid Email or Password.");
                 return View(loginVM);
             }
 
@@ -124,6 +123,57 @@ namespace Evenda.UI.Controllers
             await HttpContext.SignOutAsync(Constants.DEFAULT_AUTHENTICATION_SCHEME);
             return RedirectToAction("Index", "Home");
         }
+        #endregion
+
+        #region Forget Password
+
+        [HttpGet("forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid) return View(forgotPasswordDto);
+
+            await ExecuteApiCall(
+                () => _authApiClient.SendForgotPasswordReq(forgotPasswordDto)
+            );
+
+            if (!ModelState.IsValid) return View(forgotPasswordDto);
+
+            return ResetPassword(forgotPasswordDto.Email, true);
+        }
+
+        #endregion
+
+        #region Reset Password
+
+        [HttpGet("reset-password")]
+        public IActionResult ResetPassword(string email, bool showEmailSentMsg = false)
+        {
+            ViewBag.ShowEmailSentMsg = showEmailSentMsg;
+            return View("ResetPassword", new ResetPasswordDto { Email = email });
+        }
+
+        [HttpPost("reset-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid) return View(resetPasswordDto);
+
+            await ExecuteApiCall(
+                () => _authApiClient.SendResetPasswordReq(resetPasswordDto)
+            );
+
+            if (!ModelState.IsValid) return View(resetPasswordDto);
+
+            return RedirectToAction("Login");
+        }
+
         #endregion
 
         #endregion

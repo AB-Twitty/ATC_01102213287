@@ -1,5 +1,6 @@
 ﻿using Evenda.App.Contracts;
 using Evenda.App.Contracts.IInfrastructure.IHasher;
+using Evenda.App.Contracts.IInfrastructure.IOtpService;
 using Evenda.App.Contracts.IInfrastructure.ITokenProvider;
 using Evenda.App.Contracts.IPersistence.IRepositories;
 using Evenda.App.Contracts.IPersistence.IUnitOfWork;
@@ -8,6 +9,7 @@ using Evenda.App.Contracts.IValidators;
 using Evenda.App.Dtos.Auth;
 using Evenda.App.Models;
 using Evenda.App.Utils.Constants;
+using Evenda.App.Utils.Enums;
 using Evenda.Domain.Entities.UserEntities;
 using Evenda.Services.Services.Base;
 
@@ -24,12 +26,13 @@ namespace Evenda.App.Services.Auth
         private readonly IUserRepository _userRepo;
         private readonly IBaseRepository<UserSession> _userSessionsRepo;
         private readonly IWorkContext _workContext;
+        private readonly IOtpService _otpService;
 
         #endregion
 
         #region Ctor
 
-        public AuthService(IValidatorDispatcher validator, IUnitOfWork unitOfWork, IHasher hasher, ITokenProvider tokenProvider, IWorkContext workContext)
+        public AuthService(IValidatorDispatcher validator, IUnitOfWork unitOfWork, IHasher hasher, ITokenProvider tokenProvider, IWorkContext workContext, IOtpService otpService)
         {
             _validator = validator;
             _unitOfWork = unitOfWork;
@@ -38,6 +41,7 @@ namespace Evenda.App.Services.Auth
             _hasher = hasher;
             _tokenProvider = tokenProvider;
             _workContext = workContext;
+            _otpService = otpService;
         }
 
         protected async Task<AuthDto> RefreshUserSession(User user, UserSession? lastActiveSession = null)
@@ -147,6 +151,44 @@ namespace Evenda.App.Services.Auth
             await _unitOfWork.SaveChangesAsync();
 
             return Created(user.Id);
+        }
+
+        public async Task<BaseResponse> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            var user = await _userRepo.FirstOrDefaultAsync(u => !u.IsDeleted && u.Email == forgotPasswordDto.Email);
+            if (user == null)
+                return NotFound("User not found");
+
+            await _otpService.SendOtpToUser(user, OtpType.ForgotPassword);
+
+            return Success("OTP sent to your email");
+        }
+
+        public async Task<BaseResponse> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var validationResult = _validator.Validate(new LoginDto { Email = resetPasswordDto.Email, Password = resetPasswordDto.NewPassword });
+            if (!validationResult.IsValid)
+                return ValidationError(validationResult.Errors);
+
+            var user = await _userRepo.FirstOrDefaultAsync(u => !u.IsDeleted && u.Email == resetPasswordDto.Email);
+            if (user == null)
+                return NotFound("User not found");
+
+            var isValidOtp = _otpService.ValidateOtpForUser(user, OtpType.ForgotPassword, resetPasswordDto.Otp);
+            if (!isValidOtp)
+                return BadRequest("The code you entered is invalid or has expired. Please request a new code and try again.");
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            user.PasswordHash = _hasher.Hash(resetPasswordDto.NewPassword);
+
+            var userSessions = await _userSessionsRepo.FindAsync(x => !x.IsDeleted && x.UserId == user.Id);
+            foreach (var session in userSessions)
+                session.IsDeleted = true;
+
+            await _unitOfWork.CommitAsync();
+
+            return Success("Password reset successfully");
         }
 
         #endregion
