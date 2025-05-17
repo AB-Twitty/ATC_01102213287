@@ -128,10 +128,15 @@ namespace Evenda.App.Services.Event
                 eventDto.BookedTickets = await _ticketRepo.CountAsync(x => x.EventId == eventDto.Id && !x.IsDeleted);
 
                 var userId = _workContext.GetCurrentUserId();
-                if (string.IsNullOrEmpty(userId)) continue;
-
-                eventDto.IsBooked = await _ticketRepo
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    eventDto.IsBooked = await _ticketRepo
                     .Exists(x => x.EventId == eventDto.Id && x.UserId.ToString() == userId && !x.IsDeleted);
+                }
+                else
+                {
+                    eventDto.IsBooked = false;
+                }
 
                 if (!includeThumbnailImg) continue;
 
