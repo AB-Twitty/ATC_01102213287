@@ -33,6 +33,10 @@ This repository contains two main projects:
 - Dark Mode Toggle
 - Fully Responsive Design
 
+### 🚀 Deployment
+- Live API: http://evenda-api.runasp.net
+- Live Frontend: `http://evenda.runasp.net
+
 ---
 
 ## 🚀 Quick Start
