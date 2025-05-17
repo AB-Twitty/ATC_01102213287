@@ -92,7 +92,7 @@ namespace Evenda.Infrastructure.OtpService
                     templateModel: new
                     {
                         Otp = otp,
-                        ResetUrl = "https://www.google.co.uk/",
+                        ResetUrl = "https://localhost:44366/auth/reset-password",
                         ExpirationTime = Constants.OTP_EXPIRATION_TIME_IN_MINUTES
                     }
                 );
