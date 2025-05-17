@@ -72,40 +72,27 @@ cd evenda-frontend
 ```
 
 ---
+### 🏃‍♂️ Step 2: Running with IIS Express (Local Development)
 
-### ⚙️ Step 2: Configure `appsettings.json`
+1. Open the Solution in Visual Studio
+•	Launch Visual Studio 2022.
+•	Open your solution (.sln file).
 
-Inside `Evenda.MVC`, create or modify `appsettings.json` like this:
+2. Set the Startup Project
+•	In Solution Explorer, right-click your main project (e.g., Evenda.UI or Evenda.MVC).
+•	Select Set as Startup Project.
 
-```json
-"ApiSettings": {
-  "BaseUrl": "https://evendaapi.somee.com/api"
-}
-```
+3. Select IIS Express
+•	At the top of Visual Studio, next to the green play (▶️) button, ensure the dropdown says IIS Express.
+•	If not, select it from the dropdown.
 
-> Make sure the `BaseUrl` points to your deployed or local API server.
+4. Run the Project
+•	Press F5 (Debug) or Ctrl+F5 (Run without debugging).
+•	Visual Studio will build your project and launch it using IIS Express.
+•	Your browser will open to a URL like https://localhost:44366/ (the port may vary).
 
----
-
-### ▶️ Step 3: Run the Application
-
-Run the MVC app using:
-
-```bash
-dotnet run --project Evenda.MVC
-```
-
-Or from Visual Studio:
-- Set `Evenda.MVC` as the startup project
-- Press `F5` to launch
-
-The frontend will be accessible at:
-```
-https://localhost:5002
-http://localhost:5001
-```
-
-> The ports may differ based on your local settings or launch profile.
+5. Configure appsettings.json (if needed)
+•	Make sure your ApiSettings:BaseUrl points to the correct API endpoint accessible from your local machine.
 
 ---
 
