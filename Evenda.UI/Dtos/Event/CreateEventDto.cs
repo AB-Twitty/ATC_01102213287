@@ -10,15 +10,12 @@ namespace Evenda.UI.Dtos.Event
         public decimal Price { get; set; }
         public string Category { get; set; }
         public IList<string> Tags { get; set; }
-
         public string Country { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
         public DateTime DateTime { get; set; }
-
         public int TicketsQty { get; set; }
-
-        public int ThumbnailIdx { get; set; }
+        public string? ThumbnailKey { get; set; }
         public IList<FileUploadDto> Images { get; set; } = new List<FileUploadDto>();
 
         public CreateEventDto(CreateEventVM @createVM)
@@ -28,8 +25,8 @@ namespace Evenda.UI.Dtos.Event
             Price = @createVM.Price;
             Category = @createVM.Category;
 
-            Tags = @createVM.StringTags?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(t => t.Trim()).ToList() ?? new List<string>();
+            Tags = @createVM.StringTags?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim()).ToList() ?? [];
 
             Country = @createVM.Country;
             City = @createVM.City;
@@ -39,8 +36,9 @@ namespace Evenda.UI.Dtos.Event
                 @createVM.Time.Hour, @createVM.Time.Minute, 0);
 
             TicketsQty = @createVM.TicketsQty;
-            ThumbnailIdx = @createVM.ThumbnailIdx;
 
+            ThumbnailKey = @createVM.ThumbnailKey?.StartsWith("new-") ?? false
+                ? @createVM.ThumbnailKey.Split('-')[1] : @createVM.ThumbnailKey;
         }
 
         public async Task ReadImagesFromFiles(IList<IFormFile> imageFiles)

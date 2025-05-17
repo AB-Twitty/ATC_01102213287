@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Evenda.UI.Models.EventVM
 {
     public class CreateEventVM
     {
-        public IEnumerable<SelectListItem> TagsSelectItems { get; set; }
-
+        public Guid? EventId { get; set; }
+        public bool IsInCreateMode { get; set; } = true;
 
         [Required]
         public string Name { get; set; }
@@ -18,7 +17,6 @@ namespace Evenda.UI.Models.EventVM
         [Required]
         public string Category { get; set; }
         public string? StringTags { get; set; }
-
         [Required]
         public string Country { get; set; }
         [Required]
@@ -37,18 +35,18 @@ namespace Evenda.UI.Models.EventVM
         public TimeOnly Time { get; set; } = TimeOnly.FromDateTime(DateTime.Now.AddHours(1));
 
 
-        public IList<IFormFile> Images { get; set; } = new List<IFormFile>();
+        // Image related Props
+        public IList<IFormFile> NewImages { get; set; } = [];
+        public string? DeletedImageIds { get; set; } = "";
+        public string? ThumbnailKey { get; set; }
+        public IList<ImageVM> Images { get; set; } = [];
+        public int? OriginalThumbnailImgIdx { get; set; }
+    }
 
-        public int ThumbnailIdx { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (ThumbnailIdx < 0 || ThumbnailIdx >= Images.Count)
-            {
-                yield return new ValidationResult(
-                    "Thumbnail index must be within the bounds of the Images array.",
-                    new[] { nameof(ThumbnailIdx) });
-            }
-        }
+    public class ImageVM
+    {
+        public Guid? Id { get; set; }
+        public string? ContentType { get; set; }
+        public string? Base64 { get; set; }
     }
 }

@@ -27,8 +27,10 @@ namespace Evenda.App.Services.Media
 
         #region Features
 
-        public async Task SaveEventImages(IList<FileUploadDto> imgFiles, Guid eventId, int thumbnailIdx = 0)
+        public async Task SaveEventImages(IList<FileUploadDto> imgFiles, Guid eventId, string? thumbnailKey = null)
         {
+            int.TryParse(thumbnailKey, out int thumbnailIdx);
+
             foreach (var imgFile in imgFiles)
             {
                 var img = new Image
@@ -46,8 +48,6 @@ namespace Evenda.App.Services.Media
                 }
                 catch { }
             }
-
-            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<Image?> GetEventThumbnailImg(Guid eventId)
@@ -55,6 +55,31 @@ namespace Evenda.App.Services.Media
             return await _imageRepo.FirstOrDefaultAsync(
                         predicate: e => e.EventId == eventId && e.IsThumbnail
                     );
+        }
+
+        public async Task DeleteEventImages(IList<Guid> DeletedImgIds)
+        {
+            var images = await _imageRepo.FindAsync(
+                predicate: e => DeletedImgIds.Contains(e.Id)
+            );
+
+            if (images?.Any() ?? false)
+            {
+                foreach (var img in images)
+                {
+                    _imageRepo.Delete(img);
+                }
+            }
+        }
+
+        public async Task SetImageAsThumbnail(Guid imgId)
+        {
+            var img = await _imageRepo.GetByIdAsync(imgId);
+            if (img != null)
+            {
+                img.IsThumbnail = true;
+                _imageRepo.Update(img);
+            }
         }
 
         #endregion

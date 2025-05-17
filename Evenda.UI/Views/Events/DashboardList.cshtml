@@ -262,9 +262,13 @@
                                                 asp-controller="Events" asp-action="Details" asp-route-name="@item.Name.Replace(' ','-')" asp-route-id="@item.Id.ToString()">
                                                 View
                                             </a>
-                                            <button class="btn btn-white btn-xs">Edit</button>
                                             @if (!item.IsDeleted && item.DateTime > DateTime.Now)
                                             {
+                                                <a class="btn btn-white btn-xs" role="button"
+                                                   asp-controller="Events" asp-action="EditEvent" asp-route-id="@item.Id">
+                                                    Edit
+                                                </a>
+
                                                 <form asp-action="CancelEvent" asp-controller="Events" method="post" style="display:inline;">
                                                     <input hidden name="eventId" value="@item.Id" />
                                                     <button type="button" class="btn btn-danger btn-xs"

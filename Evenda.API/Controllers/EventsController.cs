@@ -58,6 +58,14 @@ namespace Evenda.API.Controllers
             return HandleResponse(response);
         }
 
+        [HttpPut("edit/{id}")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
+        public async Task<IActionResult> EditEvent([FromBody] EditEventDto editEventDto)
+        {
+            var response = await _eventService.EditEvent(editEventDto);
+            return HandleResponse(response);
+        }
+
         [HttpDelete("cancel/{eventId}")]
         [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         public async Task<IActionResult> CancelEvent([FromRoute] Guid eventId)

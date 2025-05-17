@@ -1,33 +1,45 @@
-﻿@model CreateEventVM
+﻿@using Evenda.UI.Contracts.IHelper
+@model CreateEventVM
+@inject IDropdownHelper _dropdownHelper
 
 @{
-	Layout = "_DashboardLayout";
-	ViewData["Title"] = "New Event";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = Model.IsInCreateMode ? "New Event" : "Edit Event";
+
+    var tagSelect = (await _dropdownHelper.GetTagSelectItems(OnlyInUse: false))
+        .Union(Model.StringTags?.Split(',').Select(x => new SelectListItem
+        {
+            Text = x,
+            Value = x,
+            Selected = true
+        }) ?? []).GroupBy(i => i.Value).SelectMany(g => g.Take(1));
+
+    var categorySelect = await _dropdownHelper.GetCatgorySelectItems(OnlyInUse: false);
 }
 
 @section Styles {
     <style>
         .image {
-            position: relative;
+        position: relative;
         }
 
         .img-del {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            opacity: 0.3;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        opacity: 0.3;
         }
 
         .img-del:hover {
-            opacity: 1;
+        opacity: 1;
         }
     </style>
 
-	<link href="~/lib/mdb-flags/css/mdb.min.css" rel="stylesheet" />
+    <link href="~/lib/mdb-flags/css/mdb.min.css" rel="stylesheet" />
 }
 
 <div class="wrapper wrapper-content animated fadeInRight ecommerce">
@@ -40,7 +52,8 @@
                     <li><a class="nav-link" data-bs-toggle="tab" href="#tab-2" aria-selected="false" tabindex="-1" role="tab"> Data</a></li>
                     <li><a class="nav-link" data-bs-toggle="tab" href="#tab-3" aria-selected="false" tabindex="-1" role="tab"> Images</a></li>
                 </ul>
-                <form asp-controller="Events" asp-action="Create" method="post"  enctype="multipart/form-data" >
+                <form asp-controller="Events" asp-action="@(Model.IsInCreateMode ? "Create" : "EditEvent")" 
+                method="post"  enctype="multipart/form-data" >
                     <div class="tab-content">
                         <div id="tab-1" class="tab-pane active" role="tabpanel">
                             <div class="panel-body">
@@ -52,7 +65,7 @@
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Price<span class="text-danger"> *</span>:</label>
-                                        <div class="col-sm-10"><input asp-for="Price" type="text" class="form-control" placeholder="$160.00"></div>
+                                        <div class="col-sm-10"><input asp-for="Price" type="text" class="form-control" placeholder="$00.00"></div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Description<span class="text-danger"> *</span>:</label>
@@ -65,13 +78,21 @@
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Category<span class="text-danger"> *</span>:</label>
-                                        <div class="col-sm-10"><input asp-for="Category" type="text" class="form-control" placeholder="Category"></div>
+                                        <div class="col-sm-10">
+                                            <select asp-for="Category" class="multiple-select" placeholder="Select Category...">
+                                                @foreach (var category in categorySelect)
+                                                {
+                                                    <option value="@category.Value" selected="@category.Selected">@category.Text</option>
+                                                }
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Tags:</label>
                                         <div class="col-sm-10">
                                             <select asp-for="StringTags" multiple class="multiple-select" placeholder="Select Tags...">
-                                                @foreach(var tag in Model.TagsSelectItems) {
+                                                @foreach (var tag in tagSelect)
+                                                {
                                                     <option value="@tag.Value" selected="@tag.Selected">@tag.Text</option>
                                                 }
                                             </select>
@@ -87,21 +108,24 @@
                                 <fieldset>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">ID:</label>
-                                        <div class="col-sm-10"><input type="text" disabled class="form-control disabled" placeholder="xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx"></div>
+                                        <div class="col-sm-10">
+                                            <input hidden asp-for="@Model.EventId" />
+                                            <input value="@Model.EventId" type="text" disabled class="form-control disabled" placeholder="xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx">
+                                        </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Country<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10">
+                                            <input id="selected-country" hidden disabled value="@Model.Country" />
                                             <select asp-for="Country" id="country-select" placeholder="Select Country...">
-                                                @if(!string.IsNullOrEmpty(Model.Country)) {
-                                                    <option value="@Model.Country" selected>@Model.Country</option>
-                                                }
+
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">City<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-10">
+                                            <input hidden disabled id="selected-city" value="@Model.City" />
                                             <select asp-for="City" id="city-select" placeholder="Select City..."></select>
                                         </div>
                                     </div>
@@ -119,7 +143,7 @@
                                         </div>
 
                                         <div class="col-sm-1"></div>
-                                        
+
                                         <label class="col-sm-1 col-form-label">Time<span class="text-danger"> *</span>:</label>
                                         <div class="col-sm-4">
                                             <div class="input-group clockpicker">
@@ -141,19 +165,43 @@
                             <div class="panel-body">
 
                                 <div class="row">
-
+                                    <input hidden asp-for="OriginalThumbnailImgIdx" />
                                     <!--Images-->
                                     <div class="col-12">
                                         <button type="button" id="upload-btn" class="btn btn-white" style="margin-right:10px">
                                             <i class="fa fa-plus" style="margin-right:5px;"></i>
                                             Upload
                                         </button>
-                                        <input asp-for="Images" type="file" id="image-input" accept="image/*" style="display:none;" multiple>
-
+                                        <input hidden accept="image/*" type="file" multiple asp-for="NewImages" id="image-input" />
                                     </div>
 
-                                    <div class="row" id="images-gallery">
+                                    <div class="row" id="image-gallery">
+                                        @for(int i=0; i<Model.Images.Count; i++) 
+                                        {
+                                            var img = Model.Images[i];
+                                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 d-flex flex-column image text-center p-2">
+                                                <div class="shadow d-flex flex-column flex-grow-1 border-2 border">
+                                                    <img src="data:@img.ContentType;base64,@img.Base64" class="img-fluid pb-1" />
+                                                    <button type="button" class="img-del btn btn-sm btn-danger" data-key="@img.Id">
+                                                        <i class="fa fa-close"></i>
+                                                    </button>
+
+                                                    <div class="d-flex mt-auto">
+                                                        <div class="w-100 mb-1">
+                                                            <input class="form-check-input" type="radio" name="ThumbnailKey" value="@img.Id" @(i==Model.OriginalThumbnailImgIdx ? "checked" : "") />
+                                                            <label class="m-0">Thumbnail</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input hidden name="Images[@i].ContentType" value="@img.ContentType" />
+                                            <input hidden name="Images[@i].Base64" value="@img.Base64" />
+                                            <input type="hidden" name="Images[@i].Id" value="@(img.Id?.ToString() ?? "")" />
+                                        }
                                     </div>
+
+                                    <input type="hidden" asp-for="DeletedImageIds" id="DeletedImageIds" />
 
                                 </div>
 

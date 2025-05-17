@@ -47,6 +47,14 @@ namespace Evenda.UI.ApiClients.Event
             return response.Data;
         }
 
+        public async Task<Guid> SendEditEventReq(EditEventDto editEventDto)
+        {
+            var response = await PutAsync<Guid, EditEventDto>(
+                string.Format(ApiEndPoints.EDIT_EVENT, editEventDto.Id),
+                editEventDto);
+            return response.Data;
+        }
+
         public async Task SendCancelEventReq(Guid eventId)
         {
             var response = await DeleteAsync(string.Format(ApiEndPoints.CANCEL_EVENT, eventId.ToString()));

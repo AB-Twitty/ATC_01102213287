@@ -148,7 +148,7 @@ namespace Evenda.App.Services.Event
         {
             var @event = await _eventRepo.FirstOrDefaultAsync(
                 predicate: e => e.Id == eventId,
-                include: e => e.Include(x => x.Images)
+                include: e => e.Include(x => x.Images).Include(x => x.Tags)
             );
 
             if (@event == null)
@@ -203,9 +203,78 @@ namespace Evenda.App.Services.Event
             await _eventRepo.AddAsync(@event);
             await _unitOfWork.CommitAsync();
 
-            await _imageService.SaveEventImages(createDto.Images, @event.Id, createDto.ThumbnailIdx);
+            await _imageService.SaveEventImages(createDto.Images, @event.Id, createDto.ThumbnailKey);
+            await _unitOfWork.SaveChangesAsync();
 
             return Created(@event.Id);
+        }
+
+        public async Task<DataResponse<Guid>> EditEvent(EditEventDto editDto)
+        {
+            var @event = await _eventRepo.FirstOrDefaultAsync(
+                predicate: x => x.Id == editDto.Id,
+                include: x => x.Include(x => x.Tags));
+
+            if (@event == null) return NotFound<Guid>();
+            if (@event.IsDeleted) return BadRequest<Guid>("Deleted event cannot be updated.");
+            if (@event.DateTime <= DateTime.Now) return BadRequest<Guid>("Already started or completed event cannot be updated.");
+
+            var validationResult = _validatorDispatcher.Validate(editDto as CreateEventDto);
+            if (@event.Tickets.Count > editDto.TicketsQty)
+                validationResult.AddError(nameof(@event.TicketsQuantity), "Tickets quantity cannot be less than already booked tickets.");
+            if (!validationResult.IsValid) return ValidationError<Guid>(validationResult.Errors);
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            IList<TagEntity> eventTags = [];
+            if (editDto.Tags != null)
+            {
+                eventTags = await _tagService.ProcessTagsAsStrings(
+                    tags: editDto.Tags,
+                    returnOnlyNewTags: false,
+                    persistNewTags: true
+                );
+            }
+
+            // add tags
+            foreach (var tag in eventTags)
+            {
+                if (@event.Tags.Any(t => t.Id == tag.Id)) continue;
+                @event.Tags.Add(tag);
+            }
+            // remove not selected tags
+            foreach (var tag in @event.Tags)
+            {
+                if (!eventTags.Any(t => t.Id == tag.Id))
+                {
+                    @event.Tags.Remove(tag);
+                }
+            }
+
+            @event.Name = editDto.Name;
+            @event.Description = editDto.Description;
+            @event.Venue = editDto.Venue;
+            @event.Country = editDto.Country;
+            @event.City = editDto.City;
+            @event.Price = editDto.Price;
+            @event.Category = editDto.Category;
+            @event.DateTime = editDto.DateTime;
+            @event.TicketsQuantity = editDto.TicketsQty;
+            @event.Tags = eventTags;
+            @event.DateTime = editDto.DateTime;
+
+            _eventRepo.Update(@event);
+            await _unitOfWork.CommitAsync();
+
+            await _imageService.DeleteEventImages(editDto.DeletedImgIds);
+
+            if (Guid.TryParse(editDto.ThumbnailKey, out Guid thumbnailImgId))
+                await _imageService.SetImageAsThumbnail(thumbnailImgId);
+
+            await _imageService.SaveEventImages(editDto.Images, @event.Id, editDto.ThumbnailKey);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Success(@event.Id);
         }
 
         public async Task<BaseResponse> CancelEvent(Guid EventId)

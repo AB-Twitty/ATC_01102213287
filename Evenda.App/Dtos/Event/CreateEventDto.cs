@@ -16,7 +16,7 @@ namespace Evenda.App.Dtos.Event
         public DateTime DateTime { get; set; }
 
         public int TicketsQty { get; set; }
-        public int ThumbnailIdx { get; set; }
+        public string? ThumbnailKey { get; set; }
         public IList<FileUploadDto> Images { get; set; } = new List<FileUploadDto>();
     }
 }

@@ -73,6 +73,25 @@ namespace Evenda.UI.ApiClients
             return baseResponse;
         }
 
+        protected async Task<DataResponse<TData>> PutAsync<TData, TDto>(string url, TDto data)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync(url, content);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                throw new UnauthorizedAccessException("Unauthorized access");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var baseResponse = JsonSerializer.Deserialize<DataResponse<TData>>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? throw new JsonException("Failed to deserialize response");
+
+            HandleResponse(baseResponse);
+
+            return baseResponse;
+        }
+
         #endregion
 
         #region Non-Generic Methods

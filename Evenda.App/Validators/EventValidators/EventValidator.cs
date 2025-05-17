@@ -19,7 +19,6 @@ namespace Evenda.App.Validators.EventValidators
             Required(validationResult, dto.Venue, nameof(dto.Venue));
             Required(validationResult, dto.DateTime, nameof(dto.DateTime));
             Range(validationResult, dto.TicketsQty, nameof(dto.TicketsQty), 1);
-            Range(validationResult, dto.ThumbnailIdx, nameof(dto.ThumbnailIdx), 0, dto.Images.Count - 1);
 
             return validationResult;
         }

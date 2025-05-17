@@ -19,6 +19,8 @@ namespace Evenda.UI.Dtos.Event
         public int AvailableTickets => TicketsQuantity - BookedTickets;
         public bool? IsBooked { get; set; }
 
-        public IList<FileUploadDto> Images { get; set; }
+        public IList<ImageDto> Images { get; set; }
+
+        public IList<string> Tags { get; set; } = new List<string>();
     }
 }

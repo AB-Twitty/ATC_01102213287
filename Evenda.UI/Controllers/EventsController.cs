@@ -7,7 +7,6 @@ using Evenda.UI.Helpers;
 using Evenda.UI.Models.EventVM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Evenda.UI.Controllers
 {
@@ -72,28 +71,21 @@ namespace Evenda.UI.Controllers
         }
         #endregion
 
+        #region Event Details
         [HttpGet("event/{name}/{id}")]
         public async Task<IActionResult> Details(string name, Guid id)
         {
             var data = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
             return View(data);
         }
+        #endregion
 
         #region Create Event
         [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         [HttpGet("dashboard/events/new")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
-            var tagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
-                .Select(t => new SelectListItem
-                {
-                    Text = t.Name,
-                    Value = t.Id.ToString(),
-                    Selected = false
-                });
-
-            return View(new CreateEventVM { TagsSelectItems = tagsSelectItems });
+            return View(new CreateEventVM());
         }
 
         [HttpPost("dashboard/events/new")]
@@ -101,35 +93,21 @@ namespace Evenda.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateEventVM createVM)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return View(createVM);
+
+            var dto = new CreateEventDto(createVM);
+            await dto.ReadImagesFromFiles(createVM.NewImages);
+
+            var eventId = await ExecuteApiCall(() => _eventApiClient.SendCreateEventReq(dto));
+            return RedirectToAction(nameof(Details), new
             {
-                var tags = await ExecuteApiCall(() => _tagApiClient.SendGetTagsInUseReq());
-                createVM.TagsSelectItems = tags.OrderByDescending(t => t.EventsCnt)
-                    .Select(t => new SelectListItem
-                    {
-                        Text = t.Name,
-                        Value = t.Id.ToString(),
-                        Selected = createVM.StringTags?.Split(',').Contains(t.Id.ToString()) ?? false
-                    })
-                    .Union(createVM.StringTags?.Split(',').Select(x => new SelectListItem
-                    {
-                        Text = x,
-                        Value = x,
-                        Selected = true
-                    }) ?? [])
-                    .GroupBy(i => i.Value).SelectMany(g => g.Take(1));
-                return View(createVM);
-            }
-
-            var createDto = new CreateEventDto(createVM);
-            await createDto.ReadImagesFromFiles(createVM.Images);
-
-            var eventId = await ExecuteApiCall(() => _eventApiClient.SendCreateEventReq(createDto));
-
-            return RedirectToAction(nameof(Details), new { id = eventId, name = createVM.Name });
+                id = eventId,
+                name = createVM.Name.Replace(' ', '-')
+            });
         }
         #endregion
 
+        #region Cancel Event
         [HttpPost("cancel")]
         [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         [ValidateAntiForgeryToken]
@@ -140,6 +118,64 @@ namespace Evenda.UI.Controllers
 
             return RedirectToAction("DashboardList");
         }
+        #endregion
+
+        #region Edit Event
+        [HttpGet("edit/{id}")]
+        public async Task<IActionResult> EditEvent(Guid id)
+        {
+            var @event = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
+
+            var model = new CreateEventVM
+            {
+                IsInCreateMode = false,
+                EventId = @event.Id,
+                Name = @event.Name,
+                Description = @event.Description,
+                Price = @event.Price,
+                Category = @event.Category,
+                StringTags = string.Join(',', @event.Tags),
+                Country = @event.Country,
+                City = @event.City,
+                Venue = @event.Venue,
+                Date = DateOnly.FromDateTime(@event.DateTime),
+                Time = TimeOnly.FromDateTime(@event.DateTime),
+                TicketsQty = @event.TicketsQuantity,
+                ThumbnailKey = @event.Images.FirstOrDefault(x => x.IsThumbnail)?.Id.ToString() ?? "",
+                Images = @event.Images.Select(x => new ImageVM
+                {
+                    Id = x.Id,
+                    ContentType = x.File.ContentType,
+                    Base64 = Convert.ToBase64String(x.File.FileStream)
+                }).ToList(),
+                OriginalThumbnailImgIdx = @event.Images.IndexOf(@event.Images.First(x => x.IsThumbnail)),
+            };
+
+            return View("Create", model);
+        }
+
+        [HttpPost("edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditEvent(CreateEventVM createVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                createVM.DeletedImageIds = "";
+                createVM.IsInCreateMode = false;
+                return View("Create", createVM);
+            }
+
+            var dto = new EditEventDto(createVM);
+            await dto.ReadImagesFromFiles(createVM.NewImages);
+
+            var eventId = await ExecuteApiCall(() => _eventApiClient.SendEditEventReq(dto));
+            return RedirectToAction(nameof(Details), new
+            {
+                id = eventId,
+                name = createVM.Name.Replace(' ', '-')
+            });
+        }
+        #endregion
 
         #endregion
     }
