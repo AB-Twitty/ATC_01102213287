@@ -92,24 +92,27 @@ dotnet ef database update
 This will apply all migrations and create the database.
 
 ---
+### 🏃‍♂️ Step 4: Running with IIS Express (Local Development)
 
-### ▶️ Step 4: Run the Application
+1. Open the Solution in Visual Studio
+•	Launch Visual Studio 2022.
+•	Open your solution (.sln file).
 
-Run the API using:
+2. Set the Startup Project
+•	In Solution Explorer, right-click your main project (e.g., Evenda.UI or Evenda.MVC).
+•	Select Set as Startup Project.
 
-```bash
-dotnet run --project Evenda.API
-```
+3. Select IIS Express
+•	At the top of Visual Studio, next to the green play (▶️) button, ensure the dropdown says IIS Express.
+•	If not, select it from the dropdown.
 
-Or from Visual Studio:
-- Set `Evenda.API` as the startup project
-- Press `F5` to run
+4. Run the Project
+•	Press F5 (Debug) or Ctrl+F5 (Run without debugging).
+•	Visual Studio will build your project and launch it using IIS Express.
+•	Your browser will open to a URL like http://localhost:5694/ (the port may vary).
 
-Default URLs:
-```
-https://localhost:5001
-http://localhost:5000
-```
+5. Configure appsettings.json (if needed)
+•	Make sure your ApiSettings:BaseUrl points to the correct API endpoint accessible from your local machine.
 
 ---
 
