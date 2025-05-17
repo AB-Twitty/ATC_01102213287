@@ -50,8 +50,23 @@ public class UserEntityConfiguration : BaseEntityConfiguration<User>
                     join =>
                     {
                         join.HasKey("user_id", "role_id");
+
+                        join.HasData(new Dictionary<string, object>
+                        {
+                            ["user_id"] = new Guid("3bab131c-ec00-4fd4-a171-8b2f15cd502a"),
+                            ["role_id"] = new Guid("3bab131c-ec00-4fd4-a171-8b2f15cd582a")
+                        });
                     }
                );
+
+        builder.HasData(new User
+        {
+            Id = new Guid("3bab131c-ec00-4fd4-a171-8b2f15cd502a"),
+            FirstName = "Admin",
+            LastName = "Evenda",
+            Email = "Admin@evenda.com",
+            PasswordHash = "kvf5X6s0JCzriZN85+0wig==;qg4dWyhAc0bidwvyQurTOfoOJ5dNVfU5n1/IX0SBLeU=",
+        });
 
         base.Configure(builder);
     }
