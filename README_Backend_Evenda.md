@@ -48,6 +48,7 @@ Password: 123@Admin
 Ensure you have the following installed:
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download)
+- [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime)
 - [SQL Server Express or Developer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - Visual Studio 2022+ (recommended) or VS Code
 - Entity Framework CLI  
