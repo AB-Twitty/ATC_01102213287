@@ -122,6 +122,7 @@ namespace Evenda.UI.Controllers
 
         #region Edit Event
         [HttpGet("edit/{id}")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         public async Task<IActionResult> EditEvent(Guid id)
         {
             var @event = await ExecuteApiCall(() => _eventApiClient.SendGetEventDetailsReq(id));
@@ -155,6 +156,7 @@ namespace Evenda.UI.Controllers
         }
 
         [HttpPost("edit/{id}")]
+        [Authorize(Roles = Constants.ADMIN_ROLE_NAME)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditEvent(CreateEventVM createVM)
         {
