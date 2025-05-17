@@ -58,6 +58,8 @@ namespace Evenda.UI.Controllers
         [HttpGet("events")]
         public async Task<IActionResult> Index([FromQuery] EventFilterVM filterVM, [FromQuery] int pg = 1)
         {
+            filterVM.IncludeDeleted = false;
+            filterVM.UpcomingOnly = true;
             var model = await CreateEventListViewModel(filterVM, pg, 12, true);
             return View(model);
         }
